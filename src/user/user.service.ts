@@ -4,10 +4,7 @@ import { ResponseInterface } from 'src/common/interfaces/response';
 import { UserEntity } from 'src/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateAccount } from './create-account.interface';
-import * as bcrypt from 'bcrypt';
-
-const salt = bcrypt.genSaltSync(10);
-
+import { hashPassword } from 'src/bcrypt-manager';
 @Injectable()
 export class UserService {
   constructor(
@@ -18,7 +15,7 @@ export class UserService {
 
   async createAccount(accountData: CreateAccount): Promise<ResponseInterface> {
     // encrypt password before store
-    accountData.password = await bcrypt.hash(accountData.password, salt);
+    accountData.password = hashPassword(accountData.password);
 
     try {
       // creates the new account
@@ -31,6 +28,15 @@ export class UserService {
       return { status: 200, ok: true, msg: 'User Account Created' };
     } catch (e) {
       return { status: 400, ok: false, msg: e.detail };
+    }
+  }
+
+  async findUser(email) {
+    try {
+      const user = await this.userRepository.findOneBy({ email });
+      return { user, ok: true };
+    } catch (error) {
+      return { error, ok: false };
     }
   }
 }
