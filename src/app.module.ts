@@ -6,6 +6,7 @@ import { LikeEntity } from './entities/like.entity';
 import { PostEntity } from './entities/post.entity';
 import { UserEntity } from './entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
       synchronize: true,
     }),
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
