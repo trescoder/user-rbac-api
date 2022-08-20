@@ -12,7 +12,7 @@ import { AppService } from './app.service';
       username: 'postgres',
       password: 'postgres',
       database: 'users-rbac-api',
-      entities: [],
+      entities: ['./entities/*.ts'],
       synchronize: true,
     }),
   ],
