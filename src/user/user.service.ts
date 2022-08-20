@@ -4,6 +4,9 @@ import { ResponseInterface } from 'src/common/interfaces/response';
 import { UserEntity } from 'src/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateAccount } from './create-account.interface';
+import * as bcrypt from 'bcrypt';
+
+const salt = bcrypt.genSaltSync(10);
 
 @Injectable()
 export class UserService {
@@ -14,7 +17,11 @@ export class UserService {
   ) {}
 
   async createAccount(accountData: CreateAccount): Promise<ResponseInterface> {
+    // encrypt password before store
+    accountData.password = await bcrypt.hash(accountData.password, salt);
+
     try {
+      // creates the new account
       await this.dataSource
         .createQueryBuilder()
         .insert()
