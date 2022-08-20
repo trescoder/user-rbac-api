@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { LikeEntity } from './entities/like.entity';
 import { PostEntity } from './entities/post.entity';
 import { UserEntity } from './entities/user.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserEntity } from './entities/user.entity';
       entities: [UserEntity, PostEntity, LikeEntity],
       synchronize: true,
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
