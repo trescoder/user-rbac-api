@@ -12,10 +12,7 @@ export class LikeEntity {
   post: PostEntity;
 
   @Column()
-  post_id: number;
-
-  @Column()
-  user_id: number;
+  userId: number;
 
   @Column()
   votedUp: boolean; // true = like, false = dislike

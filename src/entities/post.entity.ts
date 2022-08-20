@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -18,7 +19,7 @@ export class PostEntity {
   // "user.posts" makes reference to the "posts" property in the UserEntity which holds an
   // array of PostEntities
   @ManyToOne(() => UserEntity, (user) => user.posts)
-  owner_id: UserEntity;
+  owner: UserEntity;
 
   // creates a one to many relationship between one post and many likes/dislikes
   // each post can have many likes/dislikes
@@ -28,6 +29,7 @@ export class PostEntity {
   @Column({ type: 'varchar', length: 100, unique: true })
   content: string;
 
-  @Column({ type: 'varchar' })
-  creation_date: string;
+  @Column({ type: 'date' })
+  @CreateDateColumn()
+  creation_date: Date;
 }

@@ -28,6 +28,6 @@ export class UserEntity {
 
   // creates a relation between one user and many posts
   // "post.owner_id" makes reference to the "owner_id" in the PostEntity
-  @OneToMany(() => PostEntity, (post) => post.owner_id)
+  @OneToMany(() => PostEntity, (post) => post.owner)
   posts: PostEntity[];
 }
