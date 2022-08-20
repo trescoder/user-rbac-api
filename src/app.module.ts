@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { LikeEntity } from './entities/like.entity';
+import { PostEntity } from './entities/post.entity';
+import { UserEntity } from './entities/user.entity';
 
 @Module({
   imports: [
@@ -12,7 +15,7 @@ import { AppService } from './app.service';
       username: 'postgres',
       password: 'postgres',
       database: 'users-rbac-api',
-      entities: ['./entities/*.ts'],
+      entities: [UserEntity, PostEntity, LikeEntity],
       synchronize: true,
     }),
   ],
