@@ -14,8 +14,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // this method is calling when using the (in this case) JwtGuard
   async validate(payload) {
-    const { email, password } = payload;
-    // after the token have been decoded we will have a user in payload, we only want the email, and password
-    return { email, password };
+    const { email } = payload;
+    // after the token have been decoded we will have the user email available in the payload
+    return { email };
   }
 }
