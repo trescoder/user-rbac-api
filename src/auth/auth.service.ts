@@ -19,8 +19,8 @@ export class AuthService {
   }
 
   // this method sign some user information that will be later use to authenticate this user
-  async login(user: { password: string; email: string }) {
-    const token = this.jwtService.sign(user);
+  async login(email: string) {
+    const token = this.jwtService.sign(email);
     return { token };
   }
 }
