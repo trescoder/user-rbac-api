@@ -17,6 +17,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         message: 'Email or password incorrect',
       });
     }
-    return { email: user.email, password: user.password };
+    return { email: user.email };
   }
 }
