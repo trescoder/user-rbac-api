@@ -1,4 +1,4 @@
-import { Injectable, Post } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ResponseInterface } from 'src/common/interfaces/response';
 import { UserEntity } from 'src/entities/user.entity';
@@ -31,6 +31,10 @@ export class UserService {
 
   // TODO: Refactor and/or documentation
   //? This method may be move to another service
+  /**
+   * @param email this can be either a string or an object with a email property
+   * @returns an object containing a user entity or an error
+   */
   async findUser(email: any) {
     try {
       let user;
@@ -54,7 +58,7 @@ export class UserService {
         relations: { posts: true }, // retrieve the posts
         where: { id: user.id }, // specified the user
       });
-      return { ok: true, status: 200, data: userWithPosts };
+      return { ok: true, status: 200, data: userWithPosts.at(0) };
     } catch (error) {
       return { ok: false, status: 500, msg: error.detail };
     }
@@ -69,11 +73,9 @@ export class UserService {
       // creates a new post
       const post = this.postRepository.create({
         content: postContent,
-        owner: user,
+        owner: user, // this binds this post with the current user
       });
-      await this.postRepository.save(post); // save the post
-      user.posts.push(post); // add the post to the posts array
-      await this.userRepository.save(user); // updates the user information
+      await this.dataSource.manager.save(post); // save the post
       return { status: 201, ok: true, msg: 'Post created successfully' };
     } catch (error) {
       return { ok: false, status: 500, msg: error.detail };
