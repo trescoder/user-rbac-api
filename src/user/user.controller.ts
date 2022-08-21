@@ -39,9 +39,8 @@ export class UserController {
     @Res() res: Response,
     @Body() body: CreatePostDTO,
   ) {
-    const { user } = await this.userService.findUser(req.user);
     const { status, ...data } = await this.userService.savePost(
-      user,
+      req.user,
       body.content,
     );
     // TODO: use express to send back the response
