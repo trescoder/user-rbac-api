@@ -19,10 +19,13 @@ export class UserController {
 
   @Get('profile')
   @UseGuards(JwtGuard)
-  async profile(@Req() req: Request) {
+  async profile(@Req() req: Request, @Res() res: Response) {
     // req.user hold whatever the jwt strategy returns, in this case is the email inside an object {email}
     // TODO: use express to send back the response
-    return this.userService.getUserProfile(req.user);
+    const { status, ok, data, msg } = await this.userService.getUserProfile(
+      req.user,
+    );
+    return res.status(status).json({ ok, data, msg });
   }
 
   @Post('sign-in')

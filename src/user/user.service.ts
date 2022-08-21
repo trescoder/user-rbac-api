@@ -11,6 +11,8 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    @InjectRepository(PostEntity)
+    private postRepository: Repository<PostEntity>,
     private dataSource: DataSource,
   ) {}
 
@@ -20,13 +22,7 @@ export class UserService {
     accountData.password = hashPassword(accountData.password);
 
     try {
-      // creates the new account
-      await this.dataSource
-        .createQueryBuilder()
-        .insert()
-        .into(UserEntity)
-        .values([accountData])
-        .execute();
+      await this.userRepository.save(accountData);
       return { status: 200, ok: true, msg: 'User Account Created' };
     } catch (e) {
       return { status: 400, ok: false, msg: e.detail };
@@ -34,6 +30,7 @@ export class UserService {
   }
 
   // TODO: Refactor and/or documentation
+  //? This method may be move to another service
   async findUser(email: any) {
     try {
       let user;
@@ -50,40 +47,36 @@ export class UserService {
   }
 
   // TODO: Refactor and/or documentation
-  async getUserProfile(email: any): Promise<ResponseInterface> {
-    let userInfo;
-    // this part gets the user
+  async getUserProfile(user): Promise<ResponseInterface> {
+    // retrieving user with posts
     try {
-      ({ user: userInfo } = await this.findUser(email));
+      const userWithPosts = await this.userRepository.find({
+        relations: { posts: true }, // retrieve the posts
+        where: { id: user.id }, // specified the user
+      });
+      return { ok: true, status: 200, data: userWithPosts };
     } catch (error) {
-      return { ok: false, status: 500, msg: error.msg };
-    }
-
-    // this part gets the user's posts
-    try {
-      let userPosts = await this.dataSource
-        .getRepository(UserEntity)
-        .createQueryBuilder('user')
-        .leftJoinAndSelect('user.posts', 'post')
-        .getMany();
-      userPosts = userPosts.filter((u) => u.id === userInfo.id);
-      return { ok: true, status: 200, data: userPosts };
-    } catch (error) {
-      return { ok: false, status: 500, msg: error.msg };
+      return { ok: false, status: 500, msg: error.detail };
     }
   }
 
   // TODO: Refactor and/or documentation
-  async savePost(user: UserEntity, postContent: string) {
+  async savePost(
+    user: UserEntity,
+    postContent: string,
+  ): Promise<ResponseInterface> {
     try {
-      const post = new PostEntity();
-      post.content = postContent;
-      post.owner = user;
-      await this.dataSource.manager.save(post);
-      user.posts.push(post);
-      await this.dataSource.manager.save(user);
+      // creates a new post
+      const post = this.postRepository.create({
+        content: postContent,
+        owner: user,
+      });
+      await this.postRepository.save(post); // save the post
+      user.posts.push(post); // add the post to the posts array
+      await this.userRepository.save(user); // updates the user information
+      return { status: 201, ok: true, msg: 'Post created successfully' };
     } catch (error) {
-      return { error, ok: false };
+      return { ok: false, status: 500, msg: error.detail };
     }
   }
 }
