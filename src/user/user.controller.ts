@@ -22,10 +22,8 @@ export class UserController {
   async profile(@Req() req: Request, @Res() res: Response) {
     // req.user hold whatever the jwt strategy returns, in this case is the email inside an object {email}
     // TODO: use express to send back the response
-    const { status, ok, data, msg } = await this.userService.getUserProfile(
-      req.user,
-    );
-    return res.status(status).json({ ok, data, msg });
+    const { status, ...data } = await this.userService.getUserProfile(req.user);
+    return res.status(status).json(data);
   }
 
   @Post('sign-in')
@@ -36,10 +34,17 @@ export class UserController {
 
   @Post('add-post')
   @UseGuards(JwtGuard)
-  async addPost(@Req() req: Request, @Body() body: CreatePostDTO) {
+  async addPost(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() body: CreatePostDTO,
+  ) {
     const { user } = await this.userService.findUser(req.user);
-    await this.userService.savePost(user, body.content);
+    const { status, ...data } = await this.userService.savePost(
+      user,
+      body.content,
+    );
     // TODO: use express to send back the response
-    return 'post stored';
+    return res.status(status).json(data);
   }
 }
