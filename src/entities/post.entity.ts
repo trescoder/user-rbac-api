@@ -26,7 +26,7 @@ export class PostEntity {
   @OneToMany(() => LikeEntity, (like) => like.post)
   likes: LikeEntity[];
 
-  @Column({ type: 'varchar', length: 100, unique: true })
+  @Column({ type: 'varchar', length: 200 })
   content: string;
 
   @Column({ type: 'date' })
