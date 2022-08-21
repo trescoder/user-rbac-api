@@ -5,9 +5,17 @@ import { LocalStrategy } from './local-strategy/local.strategy';
 import { JwtStrategy } from './jwt-strategy/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UserModule } from 'src/user/user.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [PassportModule, UserModule],
+  imports: [
+    PassportModule,
+    UserModule,
+    JwtModule.register({
+      secret: 'supersecret',
+      signOptions: { expiresIn: '60s' },
+    }),
+  ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
 })
