@@ -43,7 +43,6 @@ export class UserService {
       } else {
         user = await this.userRepository.findOneBy({ email: email.email });
       }
-
       return { user };
     } catch (error) {
       return { error, ok: false };
@@ -54,6 +53,7 @@ export class UserService {
   async getUserProfile(user): Promise<ResponseInterface> {
     // retrieving user with posts
     try {
+      // this will retrieve an array, but due to the where condition
       const userWithPosts = await this.userRepository.find({
         relations: { posts: true }, // retrieve the posts
         where: { id: user.id }, // specified the user
@@ -64,18 +64,21 @@ export class UserService {
     }
   }
 
-  // TODO: Refactor and/or documentation
-  async savePost(
-    user: UserEntity,
-    postContent: string,
-  ): Promise<ResponseInterface> {
+  async savePost(user: any, postContent: string): Promise<ResponseInterface> {
     try {
       // creates a new post
+      const userWithPosts = await this.userRepository.find({
+        relations: { posts: true }, // retrieve the posts
+        where: { id: user.id }, // specified the user
+      });
+      const userPosts = userWithPosts.at(0);
       const post = this.postRepository.create({
         content: postContent,
-        owner: user, // this binds this post with the current user
+        owner: userPosts, // binds this post with this user
       });
-      await this.dataSource.manager.save(post); // save the post
+      await this.postRepository.save(post); // save the post
+      userPosts.posts.push(post); // bind this user with this post
+      await this.userRepository.save(userPosts);
       return { status: 201, ok: true, msg: 'Post created successfully' };
     } catch (error) {
       return { ok: false, status: 500, msg: error.detail };
