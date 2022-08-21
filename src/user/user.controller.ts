@@ -10,11 +10,20 @@ import {
 import { Request, Response } from 'express';
 import { JwtGuard } from 'src/auth/jwt-strategy/jwt.guard';
 import { CreateAccountDTO } from './dto/create-account.dto';
+import { CreatePostDTO } from './dto/create-post.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
+
+  @Get('profile')
+  @UseGuards(JwtGuard)
+  async profile(@Req() req: Request) {
+    // req.user hold whatever the jwt strategy returns, in this case is the email inside an object {email}
+    // TODO: use express to send back the response
+    return this.userService.getUserProfile(req.user);
+  }
 
   @Post('sign-in')
   async signIn(@Body() body: CreateAccountDTO, @Res() res: Response) {
@@ -22,9 +31,12 @@ export class UserController {
     return res.status(status).json(data);
   }
 
-  @Get('profile')
+  @Post('add-post')
   @UseGuards(JwtGuard)
-  async profile(@Req() req: Request) {
-    return req.user;
+  async addPost(@Req() req: Request, @Body() body: CreatePostDTO) {
+    const { user } = await this.userService.findUser(req.user);
+    await this.userService.savePost(user, body.content);
+    // TODO: use express to send back the response
+    return 'post stored';
   }
 }
