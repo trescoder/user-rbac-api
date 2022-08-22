@@ -1,14 +1,6 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { JwtGuard } from 'src/auth/jwt-strategy/jwt.guard';
+import { Public } from 'src/auth/jwt-strategy/public.decorator';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { UserService } from './user.service';
@@ -18,7 +10,6 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('profile')
-  @UseGuards(JwtGuard)
   async profile(@Req() req: Request, @Res() res: Response) {
     // req.user hold whatever the jwt strategy returns, in this case is the email inside an object {email}
     // TODO: use express to send back the response
@@ -27,13 +18,13 @@ export class UserController {
   }
 
   @Post('sign-in')
+  @Public() // this will be use by the jwt guard to determine if it is a public route or not
   async signIn(@Body() body: CreateAccountDTO, @Res() res: Response) {
     const { status, ...data } = await this.userService.createAccount(body);
     return res.status(status).json(data);
   }
 
   @Post('add-post')
-  @UseGuards(JwtGuard)
   async addPost(
     @Req() req: Request,
     @Res() res: Response,
