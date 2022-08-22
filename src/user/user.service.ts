@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ResponseInterface } from 'src/common/interfaces/response';
+import { ResponseInterface } from 'src/shared/interfaces/response';
 import { UserEntity } from 'src/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateAccount } from './create-account.interface';
