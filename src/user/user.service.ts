@@ -79,7 +79,15 @@ export class UserService {
       await this.postRepository.save(post); // save the post
       userPosts.posts.push(post); // bind this user with this post
       await this.userRepository.save(userPosts);
-      return { status: 201, ok: true, msg: 'Post created successfully' };
+      return {
+        status: 201,
+        ok: true,
+        data: {
+          content: post.content,
+          id: post.id,
+          creation_date: post.creation_date,
+        },
+      };
     } catch (error) {
       return { ok: false, status: 500, msg: error.detail };
     }
