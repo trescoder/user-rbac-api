@@ -7,6 +7,7 @@ import { CreateAccount } from './create-account.interface';
 import { hashPassword } from 'src/bcrypt-manager';
 import { PostEntity } from 'src/entities/post.entity';
 import { UserRepositoryService } from 'src/shared/repositories/user-repository/user-repository.service';
+import { PostDTO } from './dto/post.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -43,27 +44,26 @@ export class UserService {
 
   async savePost(user: any, postContent: string): Promise<ResponseInterface> {
     try {
-      // creates a new post
-      const userWithPosts = await this.userRepository.find({
+      // retrieve a user
+      const userPosts = await this.userRepository.findOne({
         relations: { posts: true }, // retrieve the posts
         where: { id: user.id }, // specified the user
       });
-      const userPosts = userWithPosts.at(0);
+      // creates a new post
       const post = this.postRepository.create({
         content: postContent,
         owner: userPosts, // binds this post with this user
       });
+
       await this.postRepository.save(post); // save the post
       userPosts.posts.push(post); // bind this user with this post
       await this.userRepository.save(userPosts);
+      const newPost = new PostDTO(post);
+
       return {
         status: 201,
         ok: true,
-        data: {
-          content: post.content,
-          id: post.id,
-          creation_date: post.creation_date,
-        },
+        data: { newPost },
       };
     } catch (error) {
       return { ok: false, status: 500, msg: error.detail };
