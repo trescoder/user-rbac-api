@@ -6,6 +6,7 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateAccount } from './create-account.interface';
 import { hashPassword } from 'src/bcrypt-manager';
 import { PostEntity } from 'src/entities/post.entity';
+import { UserRepositoryService } from 'src/shared/repositories/user-repository/user-repository.service';
 @Injectable()
 export class UserService {
   constructor(
@@ -14,9 +15,9 @@ export class UserService {
     @InjectRepository(PostEntity)
     private postRepository: Repository<PostEntity>,
     private dataSource: DataSource,
+    private userRepoService: UserRepositoryService,
   ) {}
 
-  // TODO: Refactor and/or documentation
   async createAccount(accountData: CreateAccount): Promise<ResponseInterface> {
     // encrypt password before store
     accountData.password = hashPassword(accountData.password);
@@ -29,36 +30,12 @@ export class UserService {
     }
   }
 
-  // TODO: Refactor and/or documentation
-  //? This method may be move to another service
-  /**
-   * @param email this can be either a string or an object with a email property
-   * @returns an object containing a user entity or an error
-   */
-  async findUser(email: any) {
-    try {
-      let user;
-      if (typeof email === 'string') {
-        user = await this.userRepository.findOneBy({ email });
-      } else {
-        user = await this.userRepository.findOneBy({ email: email.email });
-      }
-      return { user };
-    } catch (error) {
-      return { error, ok: false };
-    }
-  }
-
-  // TODO: Refactor and/or documentation
   async getUserProfile(user): Promise<ResponseInterface> {
     // retrieving user with posts
     try {
       // this will retrieve an array, but due to the where condition
-      const userWithPosts = await this.userRepository.find({
-        relations: { posts: true }, // retrieve the posts
-        where: { id: user.id }, // specified the user
-      });
-      return { ok: true, status: 200, data: userWithPosts.at(0) };
+      const userWithPosts = await this.userRepoService.getUserProfile(user);
+      return { ok: true, status: 200, data: userWithPosts };
     } catch (error) {
       return { ok: false, status: 500, msg: error.detail };
     }
