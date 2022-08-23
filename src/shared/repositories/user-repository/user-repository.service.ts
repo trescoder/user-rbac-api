@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from 'src/entities/post.entity';
 import { UserEntity } from 'src/entities/user.entity';
+import { ProfileDTO } from 'src/user/dto/profile.dto';
 import { DataSource, In, Repository } from 'typeorm';
 
 @Injectable()
@@ -41,7 +42,7 @@ export class UserRepositoryService {
       });
 
       userWithPosts.posts = postWithLikes;
-      return userWithPosts;
+      return new ProfileDTO(userWithPosts);
     } catch (error) {
       throw new Error(error);
     }
