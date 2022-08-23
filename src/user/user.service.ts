@@ -53,6 +53,7 @@ export class UserService {
       const post = this.postRepository.create({
         content: postContent,
         owner: userPosts, // binds this post with this user
+        likes: [],
       });
 
       await this.postRepository.save(post); // save the post
