@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Public } from 'src/auth/jwt-strategy/public.decorator';
 import { CreateAccountDTO } from './dto/create-account.dto';
+import { CreateLikeDTO } from './dto/create-like.dto';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { UserService } from './user.service';
 
@@ -36,5 +37,11 @@ export class UserController {
     );
     // TODO: use express to send back the response
     return res.status(status).json(data);
+  }
+
+  @Post('add-like')
+  async addLike(@Body() body: CreateLikeDTO, @Res() res: Response) {
+    const { status, data, msg } = await this.userService.addLike({ ...body });
+    return res.status(status).json({ data, msg });
   }
 }
