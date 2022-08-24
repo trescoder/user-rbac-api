@@ -15,5 +15,5 @@ export class LikeEntity {
   userId: number;
 
   @Column()
-  votedUp: boolean; // true = like, false = dislike
+  isLike: boolean; // true = like, false = dislike
 }
