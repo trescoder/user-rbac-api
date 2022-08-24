@@ -6,7 +6,7 @@ export class LikeDTO {
 
   constructor(likes: LikeEntity[]) {
     likes.forEach((l) => {
-      if (l.votedUp) this.likes++;
+      if (l.isLike) this.likes++;
       else this.dislikes++;
     });
   }
