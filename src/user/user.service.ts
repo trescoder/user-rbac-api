@@ -8,6 +8,8 @@ import { hashPassword } from 'src/bcrypt-manager';
 import { PostEntity } from 'src/entities/post.entity';
 import { UserRepositoryService } from 'src/shared/repositories/user-repository/user-repository.service';
 import { PostDTO } from './dto/post.dto';
+import { LikeEntity } from 'src/entities/like.entity';
+import { LikeRepositoryService } from 'src/shared/repositories/like-repository/like-repository.service';
 @Injectable()
 export class UserService {
   constructor(
@@ -17,6 +19,7 @@ export class UserService {
     private postRepository: Repository<PostEntity>,
     private dataSource: DataSource,
     private userRepoService: UserRepositoryService,
+    private likeRepoService: LikeRepositoryService,
   ) {}
 
   async createAccount(accountData: CreateAccount): Promise<ResponseInterface> {
@@ -68,6 +71,21 @@ export class UserService {
       };
     } catch (error) {
       return { ok: false, status: 500, msg: error.detail };
+    }
+  }
+
+  async addLike({ postId, userId, like }): Promise<ResponseInterface> {
+    try {
+      const user = await this.userRepository.findOneBy({ id: userId });
+      if (!user) {
+        throw new Error(
+          `Error adding the like to the user \nreason: User with id ${userId} not found`,
+        );
+      }
+      await this.likeRepoService.savePost({ postId, userId, like });
+      return { ok: true, status: 201, msg: 'like/dislike added successfully' };
+    } catch (error) {
+      return { ok: false, data: error, status: 500 };
     }
   }
 }
