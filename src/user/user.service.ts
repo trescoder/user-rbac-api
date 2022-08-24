@@ -13,8 +13,8 @@ import { LikeRepositoryService } from 'src/shared/repositories/like-repository/l
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
+    // @InjectRepository(UserEntity)
+    // private userRepository: Repository<UserEntity>,
     @InjectRepository(PostEntity)
     private postRepository: Repository<PostEntity>,
     private dataSource: DataSource,
@@ -27,7 +27,7 @@ export class UserService {
     accountData.password = hashPassword(accountData.password);
 
     try {
-      await this.userRepository.save(accountData);
+      await this.userRepoService.saveUser(accountData);
       return { status: 200, ok: true, msg: 'User Account Created' };
     } catch (e) {
       return { status: 400, ok: false, msg: e.detail };
@@ -48,10 +48,7 @@ export class UserService {
   async savePost(user: any, postContent: string): Promise<ResponseInterface> {
     try {
       // retrieve a user
-      const userPosts = await this.userRepository.findOne({
-        relations: { posts: true }, // retrieve the posts
-        where: { id: user.id }, // specified the user
-      });
+      const userPosts = await this.userRepoService.findUserWithPost(user.id);
       // creates a new post
       const post = this.postRepository.create({
         content: postContent,
@@ -61,7 +58,7 @@ export class UserService {
 
       await this.postRepository.save(post); // save the post
       userPosts.posts.push(post); // bind this user with this post
-      await this.userRepository.save(userPosts);
+      await this.userRepoService.saveUser(userPosts);
       const newPost = new PostDTO(post);
 
       return {
@@ -76,7 +73,7 @@ export class UserService {
 
   async addLike({ postId, userId, like }): Promise<ResponseInterface> {
     try {
-      const user = await this.userRepository.findOneBy({ id: userId });
+      const user = await this.userRepoService.findUserBy({ id: userId });
       if (!user) {
         throw new Error(
           `Error adding the like to the user \nreason: User with id ${userId} not found`,
