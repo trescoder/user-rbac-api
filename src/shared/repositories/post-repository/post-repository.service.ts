@@ -11,7 +11,11 @@ export class PostRepositoryService {
   ) {}
 
   async createPost(properties: any) {
-    return this.postRepository.create(properties).at(0);
+    const post = new PostEntity();
+    post.content = properties.content;
+    post.owner = properties.owner;
+    post.likes = [];
+    return this.savePost(post);
   }
 
   async savePost(post: PostEntity) {
