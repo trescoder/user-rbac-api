@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { ResponseInterface } from 'src/shared/interfaces/response';
-import { UserEntity } from 'src/entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
 import { CreateAccount } from './create-account.interface';
 import { hashPassword } from 'src/bcrypt-manager';
-import { PostEntity } from 'src/entities/post.entity';
 import { UserRepositoryService } from 'src/shared/repositories/user-repository/user-repository.service';
 import { PostDTO } from './dto/post.dto';
-import { LikeEntity } from 'src/entities/like.entity';
 import { LikeRepositoryService } from 'src/shared/repositories/like-repository/like-repository.service';
 import { PostRepositoryService } from 'src/shared/repositories/post-repository/post-repository.service';
 @Injectable()
