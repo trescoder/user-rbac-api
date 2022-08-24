@@ -60,6 +60,15 @@ export class UserService {
     }
   }
 
+  async deletePost(postId: number): Promise<ResponseInterface> {
+    try {
+      const { msg } = await this.postRepoService.deletePost(postId);
+      return { ok: true, msg: msg, status: 200 };
+    } catch (error) {
+      return { ok: true, msg: error, status: 200 };
+    }
+  }
+
   async addLike({ postId, userId, like }): Promise<ResponseInterface> {
     try {
       if (!(await this.userRepoService.checkUserIdExistence(userId))) {

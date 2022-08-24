@@ -18,7 +18,8 @@ export class PostEntity {
   // this property will hold the id of the entity who created this post
   // "user.posts" makes reference to the "posts" property in the UserEntity which holds an
   // array of PostEntities
-  @ManyToOne(() => UserEntity, (user) => user.posts)
+  // onDelete: 'CASCADE', this allow us to delete a user and all its relate posts entities
+  @ManyToOne(() => UserEntity, (user) => user.posts, { onDelete: 'CASCADE' })
   owner: UserEntity;
 
   // creates a one to many relationship between one post and many likes/dislikes

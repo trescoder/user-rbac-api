@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Public } from 'src/auth/jwt-strategy/public.decorator';
 import { CreateAccountDTO } from './dto/create-account.dto';
@@ -41,5 +41,13 @@ export class UserController {
   async addLike(@Body() body: CreateLikeDTO, @Res() res: Response) {
     const { status, data, msg } = await this.userService.addLike({ ...body });
     return res.status(status).json({ data, msg });
+  }
+
+  @Delete('delete-post')
+  async deletePost(@Body() body, @Res() res: Response) {
+    const { status, msg, data } = await this.userService.deletePost(
+      body.postId,
+    );
+    return res.status(status).json({ msg, data });
   }
 }

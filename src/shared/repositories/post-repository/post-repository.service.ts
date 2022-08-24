@@ -28,4 +28,15 @@ export class PostRepositoryService {
       where: { id: In(postIds) },
     });
   }
+
+  async deletePost(id: number) {
+    try {
+      // const post = await this.postRepository.findOneBy({ id });
+      await this.postRepository.delete(id);
+      return { msg: 'post deleted successfully' };
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  }
 }
