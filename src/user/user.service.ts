@@ -10,16 +10,13 @@ import { UserRepositoryService } from 'src/shared/repositories/user-repository/u
 import { PostDTO } from './dto/post.dto';
 import { LikeEntity } from 'src/entities/like.entity';
 import { LikeRepositoryService } from 'src/shared/repositories/like-repository/like-repository.service';
+import { PostRepositoryService } from 'src/shared/repositories/post-repository/post-repository.service';
 @Injectable()
 export class UserService {
   constructor(
-    // @InjectRepository(UserEntity)
-    // private userRepository: Repository<UserEntity>,
-    @InjectRepository(PostEntity)
-    private postRepository: Repository<PostEntity>,
-    private dataSource: DataSource,
     private userRepoService: UserRepositoryService,
     private likeRepoService: LikeRepositoryService,
+    private postRepoService: PostRepositoryService,
   ) {}
 
   async createAccount(accountData: CreateAccount): Promise<ResponseInterface> {
@@ -35,9 +32,7 @@ export class UserService {
   }
 
   async getUserProfile(user): Promise<ResponseInterface> {
-    // retrieving user with posts
     try {
-      // this will retrieve an array, but due to the where condition
       const userWithPosts = await this.userRepoService.getUserProfile(user);
       return { ok: true, status: 200, data: userWithPosts };
     } catch (error) {
@@ -47,16 +42,15 @@ export class UserService {
 
   async savePost(user: any, postContent: string): Promise<ResponseInterface> {
     try {
-      // retrieve a user
       const userPosts = await this.userRepoService.findUserWithPost(user.id);
       // creates a new post
-      const post = this.postRepository.create({
+      const post = await this.postRepoService.createPost({
         content: postContent,
         owner: userPosts, // binds this post with this user
         likes: [],
       });
 
-      await this.postRepository.save(post); // save the post
+      await this.postRepoService.savePost(post); // save the post
       userPosts.posts.push(post); // bind this user with this post
       await this.userRepoService.saveUser(userPosts);
       const newPost = new PostDTO(post);
@@ -73,11 +67,8 @@ export class UserService {
 
   async addLike({ postId, userId, like }): Promise<ResponseInterface> {
     try {
-      const user = await this.userRepoService.findUserBy({ id: userId });
-      if (!user) {
-        throw new Error(
-          `Error adding the like to the user \nreason: User with id ${userId} not found`,
-        );
+      if (!(await this.userRepoService.checkUserIdExistence(userId))) {
+        throw new Error(`User with id ${userId} doesn't exists`);
       }
       await this.likeRepoService.savePost({ postId, userId, like });
       return { ok: true, status: 201, msg: 'like/dislike added successfully' };

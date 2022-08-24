@@ -5,24 +5,32 @@ import { UserEntity } from 'src/entities/user.entity';
 import { CreateAccount } from 'src/user/create-account.interface';
 import { ProfileDTO } from 'src/user/dto/profile.dto';
 import { DataSource, In, Repository } from 'typeorm';
+import { PostRepositoryService } from '../post-repository/post-repository.service';
 
 @Injectable()
 export class UserRepositoryService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
-    @InjectRepository(PostEntity)
-    private postRepository: Repository<PostEntity>,
-    private dataSource: DataSource,
+    private postRepoService: PostRepositoryService,
   ) {}
 
   async saveUser(account: CreateAccount) {
     await this.userRepository.save(account);
   }
 
+  async checkUserIdExistence(userId: number) {
+    try {
+      const user = await this.userRepository.findOneBy({ id: userId });
+      return user !== null;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   async findUserBy(constrain: any) {
     try {
-      return this.userRepository.findBy(constrain);
+      return this.userRepository.findOneBy(constrain);
     } catch (error) {
       throw new Error(error);
     }
@@ -53,10 +61,9 @@ export class UserRepositoryService {
       const postIds = userWithPosts.posts.map((p) => p.id);
 
       // retrieve all posts that belong to this user with its likes/dislikes
-      const postWithLikes = await this.postRepository.find({
-        relations: { likes: true },
-        where: { id: In(postIds) },
-      });
+      const postWithLikes = await this.postRepoService.getPostsWithLikes(
+        postIds,
+      );
 
       userWithPosts.posts = postWithLikes;
       return new ProfileDTO(userWithPosts);
