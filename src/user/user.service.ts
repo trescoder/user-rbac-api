@@ -70,8 +70,12 @@ export class UserService {
       if (!(await this.userRepoService.checkUserIdExistence(userId))) {
         throw new Error(`User with id ${userId} doesn't exists`);
       }
-      await this.likeRepoService.savePost({ postId, userId, like });
-      return { ok: true, status: 201, msg: 'like/dislike added successfully' };
+      const { msg } = await this.likeRepoService.updateLikes({
+        postId,
+        userId,
+        like,
+      });
+      return { ok: true, status: 201, msg };
     } catch (error) {
       return { ok: false, data: error, status: 500 };
     }
