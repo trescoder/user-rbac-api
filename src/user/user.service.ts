@@ -60,6 +60,28 @@ export class UserService {
     }
   }
 
+  async updatePost(
+    postId: number,
+    content: string,
+  ): Promise<ResponseInterface> {
+    try {
+      const dbPost = await this.postRepoService.getPost(postId);
+      if (dbPost) {
+        const { msg, post } = await this.postRepoService.updatePost(
+          dbPost,
+          content,
+        );
+        return { ok: true, data: post, msg, status: 200 };
+      } else {
+        return {
+          ok: false,
+          msg: `post with id '${postId}' not found`,
+          status: 404,
+        };
+      }
+    } catch (error) {}
+  }
+
   async deletePost(postId: number): Promise<ResponseInterface> {
     try {
       const { msg } = await this.postRepoService.deletePost(postId);

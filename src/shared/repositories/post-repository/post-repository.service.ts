@@ -10,6 +10,14 @@ export class PostRepositoryService {
     private postRepository: Repository<PostEntity>,
   ) {}
 
+  async getPost(id: number) {
+    try {
+      return this.postRepository.findOneBy({ id });
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   async createPost(properties: any) {
     const post = new PostEntity();
     post.content = properties.content;
@@ -27,6 +35,16 @@ export class PostRepositoryService {
       relations: { likes: true },
       where: { id: In(postIds) },
     });
+  }
+
+  async updatePost(post: PostEntity, content: string) {
+    try {
+      post.content = content;
+      await this.postRepository.save(post);
+      return { msg: 'post updated successfully', post };
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async deletePost(id: number) {
