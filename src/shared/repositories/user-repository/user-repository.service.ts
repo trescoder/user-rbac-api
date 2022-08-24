@@ -51,7 +51,6 @@ export class UserRepositoryService {
     });
   }
 
-  // TODO: Don't return entities but DTOs
   async getUserProfile(userData: any) {
     try {
       // retrieve user and posts
@@ -66,6 +65,14 @@ export class UserRepositoryService {
 
       userWithPosts.posts = postWithLikes;
       return new ProfileDTO(userWithPosts);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async deleteAccount(id: number) {
+    try {
+      await this.userRepository.delete(id);
     } catch (error) {
       throw new Error(error);
     }

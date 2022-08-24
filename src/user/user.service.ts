@@ -84,4 +84,27 @@ export class UserService {
       return { ok: false, data: error, status: 500 };
     }
   }
+
+  async deleteAccount(id: number): Promise<ResponseInterface> {
+    try {
+      const account = await this.userRepoService.findUserBy({ id });
+
+      if (account) {
+        await this.userRepoService.deleteAccount(account.id);
+        return {
+          ok: true,
+          status: 200,
+          msg: `Account removed successfully`,
+        };
+      } else {
+        return {
+          ok: true,
+          status: 404,
+          msg: `user account with id '${id}' not found`,
+        };
+      }
+    } catch (error) {
+      return { ok: false, status: 500, data: error, msg: '' };
+    }
+  }
 }

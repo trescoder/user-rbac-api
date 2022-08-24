@@ -50,4 +50,12 @@ export class UserController {
     );
     return res.status(status).json({ msg, data });
   }
+
+  @Delete('delete-account')
+  async deleteAccount(@Body() body, @Res() res: Response) {
+    const { msg, data, status } = await this.userService.deleteAccount(
+      body.accountId,
+    );
+    return res.status(status).json({ msg, data });
+  }
 }
