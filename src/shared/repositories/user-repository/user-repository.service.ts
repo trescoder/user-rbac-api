@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostEntity } from 'src/entities/post.entity';
 import { UserEntity } from 'src/entities/user.entity';
 import { CreateAccount } from 'src/user/create-account.interface';
 import { ProfileDTO } from 'src/user/dto/profile.dto';
-import { DataSource, In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PostRepositoryService } from '../post-repository/post-repository.service';
 
 @Injectable()

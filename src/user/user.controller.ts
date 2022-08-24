@@ -13,7 +13,6 @@ export class UserController {
   @Get('profile')
   async profile(@Req() req: Request, @Res() res: Response) {
     // req.user hold whatever the jwt strategy returns, in this case is the email inside an object {email}
-    // TODO: use express to send back the response
     const { status, ...data } = await this.userService.getUserProfile(req.user);
     return res.status(status).json(data);
   }
@@ -35,7 +34,6 @@ export class UserController {
       req.user,
       body.content,
     );
-    // TODO: use express to send back the response
     return res.status(status).json(data);
   }
 
