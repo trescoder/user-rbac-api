@@ -9,9 +9,7 @@ import { UserEntity } from './entities/user.entity';
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
-  createTypeOrmOptions(
-    connectionName?: string,
-  ): TypeOrmModuleOptions | Promise<TypeOrmModuleOptions> {
+  createTypeOrmOptions(): TypeOrmModuleOptions | Promise<TypeOrmModuleOptions> {
     return {
       type: 'postgres',
       host: this.configService.get('DB_HOST'),

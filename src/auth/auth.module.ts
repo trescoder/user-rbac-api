@@ -9,16 +9,24 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './jwt-strategy/jwt.guard';
 import { RepositoryModule } from 'src/shared/repositories/repository.module';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    PassportModule,
-    UserModule,
-    JwtModule.register({
-      secret: 'supersecret',
-      signOptions: { expiresIn: '50m' },
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        return {
+          secret: config.get<string>('JWT_SECRET'),
+          signOptions: {
+            expiresIn: config.get<string | number>('JWT_EXP_TIME'),
+          },
+        };
+      },
     }),
+    PassportModule,
     RepositoryModule,
+    UserModule,
   ],
   providers: [
     AuthService,

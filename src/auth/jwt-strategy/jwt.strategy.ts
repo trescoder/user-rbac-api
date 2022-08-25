@@ -3,17 +3,21 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserRepositoryService } from 'src/shared/repositories/user-repository/user-repository.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private userService: UserRepositoryService) {
+  constructor(
+    private userService: UserRepositoryService,
+    private configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // instructs jwt from where it will extract the token
       ignoreExpiration: false,
-      secretOrKey: 'supersecret',
+      secretOrKey: configService.get('JWT_SECRET'),
     });
   }
 
