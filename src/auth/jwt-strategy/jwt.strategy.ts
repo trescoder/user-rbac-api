@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserRepositoryService } from 'src/shared/repositories/user-repository/user-repository.service';
@@ -21,6 +25,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new NotFoundException({
         message: 'Seems like this account does not exists',
+      });
+    }
+
+    if (user.blocked) {
+      throw new UnauthorizedException({
+        message: 'Seems like this account have been blocked',
       });
     }
     // after the token have been decoded we will have the user email available in the payload
