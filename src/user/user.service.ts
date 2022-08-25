@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseInterface } from 'src/shared/interfaces/response';
 import { CreateAccount } from './create-account.interface';
 import { hashPassword } from 'src/bcrypt-manager';
@@ -94,7 +94,11 @@ export class UserService {
   async addLike({ postId, userId, like }): Promise<ResponseInterface> {
     try {
       if (!(await this.userRepoService.checkUserIdExistence(userId))) {
-        throw new Error(`User with id ${userId} doesn't exists`);
+        throw new NotFoundException(`User with id ${userId} doesn't exists`);
+      }
+
+      if (!(await this.postRepoService.checkPostExistence(postId))) {
+        throw new NotFoundException(`Post with id ${postId} doesn't exists`);
       }
       const { msg } = await this.likeRepoService.updateLikes({
         postId,
@@ -103,7 +107,12 @@ export class UserService {
       });
       return { ok: true, status: 201, msg };
     } catch (error) {
-      return { ok: false, data: error, status: 500 };
+      return {
+        ok: false,
+        data: error.response,
+        status: error.status,
+        msg: error.message,
+      };
     }
   }
 

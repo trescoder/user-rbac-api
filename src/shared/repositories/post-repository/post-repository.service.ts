@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from 'src/entities/post.entity';
 import { In, Repository } from 'typeorm';
@@ -15,6 +15,15 @@ export class PostRepositoryService {
       return this.postRepository.findOneBy({ id });
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  async checkPostExistence(id: number) {
+    try {
+      const post = await this.postRepository.findOneBy({ id });
+      return post !== null;
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
   }
 
