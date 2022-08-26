@@ -32,9 +32,9 @@ export class UserService {
     }
   }
 
-  async getUserProfile(user): Promise<ResponseInterface> {
+  async getUserProfile(userId: number): Promise<ResponseInterface> {
     try {
-      const userWithPosts = await this.userRepoService.getUserProfile(user);
+      const userWithPosts = await this.userRepoService.getUserProfile(userId);
       return { ok: true, status: 200, data: userWithPosts };
     } catch (error) {
       return { ok: false, status: 500, msg: error.detail };
