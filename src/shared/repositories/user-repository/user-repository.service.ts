@@ -51,20 +51,16 @@ export class UserRepositoryService {
     });
   }
 
-  async getUserProfile(userData: any) {
+  async getUserProfile(userData: { email: string; id: number }) {
     try {
-      // retrieve user and posts
-      const userWithPosts = await this.findUserWithPost(userData.id);
-      // extract the posts ids
-      const postIds = userWithPosts.posts.map((p) => p.id);
-
-      // retrieve all posts that belong to this user with its likes/dislikes
-      const postWithLikes = await this.postRepoService.getPostsWithLikes(
-        postIds,
-      );
-
-      userWithPosts.posts = postWithLikes;
-      return new ProfileDTO(userWithPosts);
+      // retrieve user, posts and likes
+      const userProfile = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.posts', 'post')
+        .leftJoinAndSelect('post.likes', 'likes')
+        .where('email = :userEmail', { userEmail: userData.email })
+        .getOne();
+      return new ProfileDTO(userProfile);
     } catch (error) {
       throw new Error(error);
     }

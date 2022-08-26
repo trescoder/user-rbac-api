@@ -24,7 +24,7 @@ export class UserController {
 
   @Get('profile')
   async profile(@Req() req: Request, @Res() res: Response) {
-    // req.user hold whatever the jwt strategy returns, in this case is the email inside an object {email}
+    // req.user hold whatever the jwt strategy returns, in this case is the user email and the user id
     const { status, ...data } = await this.userService.getUserProfile(req.user);
     return res.status(status).json(data);
   }
