@@ -35,9 +35,15 @@ export class UserService {
     }
   }
 
-  async savePost(user: any, postContent: string): Promise<ResponseInterface> {
+  async savePost(
+    userData: { email: string; id: number },
+    postContent: string,
+  ): Promise<ResponseInterface> {
     try {
-      const userPosts = await this.userRepoService.findUserWithPost(user.id);
+      // we need the user and its posts to bind the new post
+      const userPosts = await this.userRepoService.findUserWithPost(
+        userData.id,
+      );
       // creates a new post
       const post = await this.postRepoService.createPost({
         content: postContent,

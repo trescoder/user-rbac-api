@@ -37,11 +37,7 @@ export class UserController {
   }
 
   @Post('add-post')
-  async addPost(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() body: CreatePostDTO,
-  ) {
+  async addPost(@Req() req, @Res() res: Response, @Body() body: CreatePostDTO) {
     const { status, ...data } = await this.userService.savePost(
       req.user,
       body.content,
