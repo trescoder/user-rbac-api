@@ -11,7 +11,7 @@ export class AuthService {
   ) {}
 
   async validateUserCredential(email: string, password: string) {
-    const user = await this.userRepoService.findUserByEmail(email);
+    const user = await this.userRepoService.findUserBy({ email });
     if (!user || !comparePasswords(password, user.password)) {
       return null;
     }
@@ -19,8 +19,8 @@ export class AuthService {
   }
 
   // this method sign some user information that will be later use to authenticate this user
-  async login(email: string) {
-    const token = this.jwtService.sign(email);
-    return { token };
+  async login(userData: any) {
+    const access_token = this.jwtService.sign(userData);
+    return { access_token };
   }
 }

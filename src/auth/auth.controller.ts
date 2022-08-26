@@ -8,9 +8,9 @@ import { LocalGuard } from './local-strategy/local.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('login')
   @Public()
   @UseGuards(LocalGuard)
+  @Post('login')
   async login(@Req() req, @Res() res: Response) {
     // req.user is return from the local strategy, it contains the user's email and password
     const token = await this.authService.login(req.user);
