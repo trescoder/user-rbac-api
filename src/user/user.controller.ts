@@ -8,7 +8,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { Public } from 'src/auth/jwt-strategy/public.decorator';
 import { AllowedRoles } from 'src/auth/roles.decorator';
 import { Roles } from 'src/roles';
@@ -18,14 +18,16 @@ import { CreatePostDTO } from './dto/create-post.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
-@AllowedRoles(Roles.user)
+@AllowedRoles(Roles.admin, Roles['semi-admin'], Roles.user)
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('profile')
-  async profile(@Req() req: Request, @Res() res: Response) {
+  async profile(@Req() req, @Res() res: Response) {
     // req.user hold whatever the jwt strategy returns, in this case is the user email and the user id
-    const { status, ...data } = await this.userService.getUserProfile(req.user);
+    const { status, ...data } = await this.userService.getUserProfile(
+      req.user.id,
+    );
     return res.status(status).json(data);
   }
 
