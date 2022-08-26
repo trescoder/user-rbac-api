@@ -4,14 +4,12 @@ import { UserEntity } from 'src/entities/user.entity';
 import { CreateAccount } from 'src/user/create-account.interface';
 import { ProfileDTO } from 'src/user/dto/profile.dto';
 import { Repository } from 'typeorm';
-import { PostRepositoryService } from '../post-repository/post-repository.service';
 
 @Injectable()
 export class UserRepositoryService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
-    private postRepoService: PostRepositoryService,
   ) {}
 
   async saveUser(account: CreateAccount) {
@@ -30,15 +28,6 @@ export class UserRepositoryService {
   async findUserBy(constrain: any) {
     try {
       return this.userRepository.findOneBy(constrain);
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
-
-  async findUserByEmail(email: string) {
-    try {
-      const user = await this.userRepository.findOneBy({ email });
-      return user;
     } catch (error) {
       throw new Error(error);
     }
