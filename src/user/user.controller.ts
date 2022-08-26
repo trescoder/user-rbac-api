@@ -7,12 +7,10 @@ import {
   Put,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Public } from 'src/auth/jwt-strategy/public.decorator';
 import { AllowedRoles } from 'src/auth/roles.decorator';
-import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/roles';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { CreateLikeDTO } from './dto/create-like.dto';
@@ -21,7 +19,6 @@ import { UserService } from './user.service';
 
 @Controller('user')
 @AllowedRoles(Roles.user)
-@UseGuards(RolesGuard)
 export class UserController {
   constructor(private userService: UserService) {}
 
