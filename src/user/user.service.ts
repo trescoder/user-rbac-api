@@ -21,8 +21,14 @@ export class UserService {
     try {
       await this.userRepoService.saveUser(accountData);
       return { status: 200, ok: true, msg: 'User Account Created' };
-    } catch (e) {
-      return { status: 400, ok: false, msg: e.detail };
+    } catch (error) {
+      let msg = '';
+      if (error.detail.includes(' already exists')) {
+        msg = error.detail.includes('username')
+          ? 'Username already taken'
+          : 'Email already taken';
+      }
+      return { status: 400, ok: false, msg };
     }
   }
 
@@ -85,13 +91,15 @@ export class UserService {
           status: 404,
         };
       }
-    } catch (error) {}
+    } catch (error) {
+      return { ok: false, status: 500, msg: error.detail };
+    }
   }
 
   async deletePost(postId: number): Promise<ResponseInterface> {
     try {
       const { msg } = await this.postRepoService.deletePost(postId);
-      return { ok: true, msg: msg, status: 200 };
+      return { ok: true, msg, status: 200 };
     } catch (error) {
       return { ok: true, msg: error, status: 200 };
     }
