@@ -8,10 +8,7 @@ import { PostRepositoryService } from './post-repository/post-repository.service
 import { UserRepositoryService } from './user-repository/user-repository.service';
 
 @Module({
-  imports: [
-    RepositoryModule,
-    TypeOrmModule.forFeature([UserEntity, PostEntity, LikeEntity]),
-  ],
+  imports: [TypeOrmModule.forFeature([UserEntity, PostEntity, LikeEntity])],
   providers: [
     LikeRepositoryService,
     UserRepositoryService,
