@@ -25,7 +25,7 @@ export class UserService {
     return await this.userRepoService.getUserProfile(userId);
   }
 
-  async savePost(userData: { email: string; id: number }, postContent: string) {
+  async addPost(userData: { email: string; id: number }, postContent: string) {
     // we need the user and its posts to bind the new post
     const userPosts = await this.userRepoService.findUserWithPost(userData.id);
     // creates a new post
@@ -41,28 +41,10 @@ export class UserService {
     return new PostDTO(post);
   }
 
-  async updatePost(
-    postId: number,
-    content: string,
-  ): Promise<ResponseInterface> {
-    try {
-      const dbPost = await this.postRepoService.getPost(postId);
-      if (dbPost) {
-        const { msg, post } = await this.postRepoService.updatePost(
-          dbPost,
-          content,
-        );
-        return { ok: true, data: post, msg, status: 200 };
-      } else {
-        return {
-          ok: false,
-          msg: `post with id '${postId}' not found`,
-          status: 404,
-        };
-      }
-    } catch (error) {
-      return { ok: false, status: 500, msg: error.detail };
-    }
+  async updatePost(postId: number, content: string) {
+    const dbPost = await this.postRepoService.getPost(postId);
+    dbPost.content = content;
+    return this.postRepoService.savePost(dbPost);
   }
 
   async deletePost(postId: number): Promise<ResponseInterface> {

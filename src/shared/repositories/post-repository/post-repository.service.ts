@@ -16,11 +16,9 @@ export class PostRepositoryService {
   ) {}
 
   async getPost(id: number) {
-    try {
-      return this.postRepository.findOneBy({ id });
-    } catch (error) {
-      throw new Error(error);
-    }
+    const post = await this.postRepository.findOneBy({ id });
+    if (!post) throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    return post;
   }
 
   async checkPostExistence(id: number) {
@@ -42,7 +40,7 @@ export class PostRepositoryService {
 
   async savePost(post: PostEntity) {
     try {
-      return await this.postRepository.save(post);
+      return this.postRepository.save(post);
     } catch (error) {
       throw new HttpException(error.detail, HttpStatus.NOT_ACCEPTABLE);
     }
@@ -53,16 +51,6 @@ export class PostRepositoryService {
       relations: { likes: true },
       where: { id: In(postIds) },
     });
-  }
-
-  async updatePost(post: PostEntity, content: string) {
-    try {
-      post.content = content;
-      await this.postRepository.save(post);
-      return { msg: 'post updated successfully', post };
-    } catch (error) {
-      throw new Error(error);
-    }
   }
 
   async deletePost(id: number) {

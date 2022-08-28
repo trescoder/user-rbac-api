@@ -36,16 +36,12 @@ export class UserController {
 
   @Post('add-post')
   async addPost(@Req() req, @Body() body: CreatePostDTO) {
-    return await this.userService.savePost(req.user, body.content);
+    return await this.userService.addPost(req.user, body.content);
   }
 
   @Put('update-post')
-  async updatePost(@Res() res: Response, @Body() body) {
-    const { status, msg, data } = await this.userService.updatePost(
-      body.postId,
-      body.content,
-    );
-    return res.status(status).json({ msg, data });
+  async updatePost(@Body() body) {
+    return await this.userService.updatePost(body.postId, body.content);
   }
 
   @Post('add-like')
