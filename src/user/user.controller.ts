@@ -18,7 +18,7 @@ export class UserController {
     return this.userService.getUserProfile(req.user.id);
   }
 
-  @Post('sign-in')
+  @Post('sign-up')
   @Public() // this will be use by the jwt guard to determine if it is a public route or not
   async signIn(@Body() body: CreateAccountDTO) {
     return this.userService.createAccount(body);

@@ -10,7 +10,7 @@ export class AuthController {
 
   @Public()
   @UseGuards(LocalGuard)
-  @Post('login')
+  @Post('sing-in')
   async login(@Req() req, @Res() res: Response) {
     // req.user is return from the local strategy, it contains the user's email and password
     const token = await this.authService.login(req.user);
