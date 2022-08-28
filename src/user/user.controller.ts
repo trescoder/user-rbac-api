@@ -30,9 +30,8 @@ export class UserController {
 
   @Post('sign-in')
   @Public() // this will be use by the jwt guard to determine if it is a public route or not
-  async signIn(@Body() body: CreateAccountDTO, @Res() res: Response) {
-    const { status, ...data } = await this.userService.createAccount(body);
-    return res.status(status).json(data);
+  async signIn(@Body() body: CreateAccountDTO) {
+    return await this.userService.createAccount(body);
   }
 
   @Post('add-post')

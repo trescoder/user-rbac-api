@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
 import { CreateAccount } from 'src/user/create-account.interface';
@@ -18,7 +13,17 @@ export class UserRepositoryService {
   ) {}
 
   async saveUser(account: CreateAccount) {
-    await this.userRepository.save(account);
+    try {
+      await this.userRepository.save(account);
+    } catch (error) {
+      if (error.detail.includes(' already exists')) {
+        throw new HttpException(
+          'Email or username already taken',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(error.details, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async checkUserIdExistence(userId: number) {

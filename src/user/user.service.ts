@@ -14,22 +14,11 @@ export class UserService {
     private postRepoService: PostRepositoryService,
   ) {}
 
-  async createAccount(accountData: CreateAccount): Promise<ResponseInterface> {
+  async createAccount(accountData: CreateAccount) {
     // encrypt password before store
     accountData.password = hashPassword(accountData.password);
-
-    try {
-      await this.userRepoService.saveUser(accountData);
-      return { status: 200, ok: true, msg: 'User Account Created' };
-    } catch (error) {
-      let msg = '';
-      if (error.detail.includes(' already exists')) {
-        msg = error.detail.includes('username')
-          ? 'Username already taken'
-          : 'Email already taken';
-      }
-      return { status: 400, ok: false, msg };
-    }
+    await this.userRepoService.saveUser(accountData);
+    return { msg: 'User Account Created' };
   }
 
   async getUserProfile(userId: number) {
