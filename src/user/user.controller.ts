@@ -23,12 +23,9 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('profile')
-  async profile(@Req() req, @Res() res: Response) {
+  async profile(@Req() req) {
     // req.user hold whatever the jwt strategy returns, in this case is the user email and the user id
-    const { status, ...data } = await this.userService.getUserProfile(
-      req.user.id,
-    );
-    return res.status(status).json(data);
+    return await this.userService.getUserProfile(req.user.id);
   }
 
   @Post('sign-in')

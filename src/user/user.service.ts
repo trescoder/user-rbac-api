@@ -32,13 +32,8 @@ export class UserService {
     }
   }
 
-  async getUserProfile(userId: number): Promise<ResponseInterface> {
-    try {
-      const userWithPosts = await this.userRepoService.getUserProfile(userId);
-      return { ok: true, status: 200, data: userWithPosts };
-    } catch (error) {
-      return { ok: false, status: 500, msg: error.detail };
-    }
+  async getUserProfile(userId: number) {
+    return await this.userRepoService.getUserProfile(userId);
   }
 
   async savePost(

@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
 import { CreateAccount } from 'src/user/create-account.interface';
@@ -41,20 +46,18 @@ export class UserRepositoryService {
   }
 
   async getUserProfile(userId: number) {
-    try {
-      // retrieve user, posts and likes
-      // TODO: Limit the number of posts
-      const userProfile = await this.userRepository
-        .createQueryBuilder('user')
-        .leftJoinAndSelect('user.posts', 'post')
-        .leftJoinAndSelect('post.likes', 'likes')
-        .where('user.id = :userId', { userId: userId })
-        .getOne();
-
-      return new ProfileDTO(userProfile);
-    } catch (error) {
-      throw new Error(error);
+    // retrieve user, posts and likes
+    // TODO: Limit the number of posts
+    const userProfile = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.posts', 'post')
+      .leftJoinAndSelect('post.likes', 'likes')
+      .where('user.id = :userId', { userId: userId })
+      .getOne();
+    if (!userProfile) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
+    return new ProfileDTO(userProfile);
   }
 
   async deleteAccount(id: number) {
