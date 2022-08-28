@@ -45,9 +45,8 @@ export class UserController {
   }
 
   @Post('add-like')
-  async addLike(@Body() body: CreateLikeDTO, @Res() res: Response) {
-    const { status, data, msg } = await this.userService.addLike({ ...body });
-    return res.status(status).json({ data, msg });
+  async addLike(@Body() body: CreateLikeDTO) {
+    return this.userService.addLike(body);
   }
 
   @Delete('delete-post')

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ResponseInterface } from 'src/shared/interfaces/response';
 import { CreateAccount } from './create-account.interface';
 import { hashPassword } from 'src/bcrypt-manager';
@@ -56,29 +56,26 @@ export class UserService {
     }
   }
 
-  async addLike({ postId, userId, like }): Promise<ResponseInterface> {
-    try {
-      if (!(await this.userRepoService.checkUserIdExistence(userId))) {
-        throw new NotFoundException(`User with id ${userId} doesn't exists`);
-      }
-
-      if (!(await this.postRepoService.checkPostExistence(postId))) {
-        throw new NotFoundException(`Post with id ${postId} doesn't exists`);
-      }
-      const { msg } = await this.likeRepoService.updateLikes({
-        postId,
-        userId,
-        like,
-      });
-      return { ok: true, status: 201, msg };
-    } catch (error) {
-      return {
-        ok: false,
-        data: error.response,
-        status: error.status,
-        msg: error.message,
-      };
+  async addLike({ postId, userId, like }) {
+    if (!(await this.userRepoService.checkUserIdExistence(userId))) {
+      throw new HttpException(
+        `User with id ${userId} doesn't exists`,
+        HttpStatus.NOT_FOUND,
+      );
     }
+
+    if (!(await this.postRepoService.checkPostExistence(postId))) {
+      throw new HttpException(
+        `Post with id ${postId} doesn't exists`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const { msg } = await this.likeRepoService.updateLikes({
+      postId,
+      userId,
+      like,
+    });
+    return { ok: true, status: 201, msg };
   }
 
   async deleteAccount(id: number): Promise<ResponseInterface> {

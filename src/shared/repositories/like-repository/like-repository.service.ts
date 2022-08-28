@@ -17,42 +17,32 @@ export class LikeRepositoryService {
   ) {}
 
   async updateLikes({ postId, userId, like }) {
-    try {
-      const post = await this.postRepository.findOne({
-        relations: { likes: true },
-        where: { id: postId },
-      });
+    const post = await this.postRepository.findOne({
+      relations: { likes: true },
+      where: { id: postId },
+    });
 
-      // check if the suer already liked/disliked the post
-      if (post.likes.some((l) => l.userId === userId)) {
-        const userLike = post.likes.find((l) => l.userId === userId);
-        // check if the user is removing his like/dislike
+    // check if the user already liked/disliked the post
+    if (post.likes.some((like) => like.userId === userId)) {
+      const userLikeEntity = post.likes.find((like) => like.userId === userId);
 
-        if (userLike.isLike === like) {
-          await this.removeLike(userLike.id);
-          return { msg: 'like/dislike removed' };
-        } else {
-          // here switches from like to dislike or vice versa
-          userLike.isLike = like;
-          await this.likeRepository.save(userLike);
-          return { msg: 'like/dislike switch' };
-        }
+      // check if the user is removing his like/dislike
+      if (userLikeEntity.isLike === like) {
+        await this.removeLike(userLikeEntity.id);
+        return { msg: 'like/dislike removed' };
       } else {
-        // first time liking/disliking
-        const likeEntity = new LikeEntity();
-        likeEntity.isLike = like;
-        likeEntity.post = post;
-        likeEntity.userId = userId;
-
-        await this.likeRepository.save(likeEntity);
-        post.likes.push(likeEntity);
-        await this.postRepository.save(post);
-        return { msg: 'new like/dislike added' };
+        // here switches from like to dislike or vice versa
+        userLikeEntity.isLike = like;
+        await this.likeRepository.save(userLikeEntity);
+        return { msg: 'like/dislike switch' };
       }
-    } catch (error) {
-      console.log(error);
-
-      throw new Error(error);
+    } else {
+      // first time liking/disliking
+      const likeEntity = await this.createLikeEntity({ like, post, userId });
+      await this.likeRepository.save(likeEntity);
+      post.likes.push(likeEntity);
+      await this.postRepository.save(post);
+      return { msg: 'new like/dislike added' };
     }
   }
 
@@ -65,5 +55,13 @@ export class LikeRepositoryService {
 
       throw new Error(error);
     }
+  }
+
+  async createLikeEntity({ like, post, userId }) {
+    const likeEntity = new LikeEntity();
+    likeEntity.isLike = like;
+    likeEntity.post = post;
+    likeEntity.userId = userId;
+    return likeEntity;
   }
 }

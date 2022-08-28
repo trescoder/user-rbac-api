@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from 'src/entities/post.entity';
 import { In, Repository } from 'typeorm';
@@ -22,12 +17,8 @@ export class PostRepositoryService {
   }
 
   async checkPostExistence(id: number) {
-    try {
-      const post = await this.postRepository.findOneBy({ id });
-      return post !== null;
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    const post = await this.postRepository.findOneBy({ id });
+    return post !== null;
   }
 
   async createPost(properties: any) {

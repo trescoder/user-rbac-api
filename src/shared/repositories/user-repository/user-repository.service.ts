@@ -36,12 +36,8 @@ export class UserRepositoryService {
   }
 
   async checkUserIdExistence(userId: number) {
-    try {
-      const user = await this.userRepository.findOneBy({ id: userId });
-      return user !== null;
-    } catch (error) {
-      throw new Error(error);
-    }
+    const user = await this.userRepository.findOneBy({ id: userId });
+    return user !== null;
   }
 
   async findUserBy(constrain: any) {
