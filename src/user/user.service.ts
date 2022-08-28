@@ -47,13 +47,8 @@ export class UserService {
     return this.postRepoService.savePost(dbPost);
   }
 
-  async deletePost(postId: number): Promise<ResponseInterface> {
-    try {
-      const { msg } = await this.postRepoService.deletePost(postId);
-      return { ok: true, msg, status: 200 };
-    } catch (error) {
-      return { ok: true, msg: error, status: 200 };
-    }
+  async deletePost(postId: number) {
+    return this.postRepoService.deletePost(postId);
   }
 
   async addLike({ postId, userId, like }) {

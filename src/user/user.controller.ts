@@ -25,23 +25,23 @@ export class UserController {
   @Get('profile')
   async profile(@Req() req) {
     // req.user hold whatever the jwt strategy returns, in this case is the user email and the user id
-    return await this.userService.getUserProfile(req.user.id);
+    return this.userService.getUserProfile(req.user.id);
   }
 
   @Post('sign-in')
   @Public() // this will be use by the jwt guard to determine if it is a public route or not
   async signIn(@Body() body: CreateAccountDTO) {
-    return await this.userService.createAccount(body);
+    return this.userService.createAccount(body);
   }
 
   @Post('add-post')
   async addPost(@Req() req, @Body() body: CreatePostDTO) {
-    return await this.userService.addPost(req.user, body.content);
+    return this.userService.addPost(req.user, body.content);
   }
 
   @Put('update-post')
   async updatePost(@Body() body) {
-    return await this.userService.updatePost(body.postId, body.content);
+    return this.userService.updatePost(body.postId, body.content);
   }
 
   @Post('add-like')
@@ -50,11 +50,8 @@ export class UserController {
   }
 
   @Delete('delete-post')
-  async deletePost(@Body() body, @Res() res: Response) {
-    const { status, msg, data } = await this.userService.deletePost(
-      body.postId,
-    );
-    return res.status(status).json({ msg, data });
+  async deletePost(@Body() body) {
+    return this.userService.deletePost(body.postId);
   }
 
   @Delete('delete-account')
