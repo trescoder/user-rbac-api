@@ -17,7 +17,7 @@ export class UserService {
   async createAccount(accountData: CreateAccount) {
     // encrypt password before store
     accountData.password = hashPassword(accountData.password);
-    await this.userRepoService.saveUser(accountData);
+    await this.userRepoService.createAccount(accountData);
     return { msg: 'User Account Created' };
   }
 
@@ -25,35 +25,20 @@ export class UserService {
     return await this.userRepoService.getUserProfile(userId);
   }
 
-  async savePost(
-    userData: { email: string; id: number },
-    postContent: string,
-  ): Promise<ResponseInterface> {
-    try {
-      // we need the user and its posts to bind the new post
-      const userPosts = await this.userRepoService.findUserWithPost(
-        userData.id,
-      );
-      // creates a new post
-      const post = await this.postRepoService.createPost({
-        content: postContent,
-        owner: userPosts, // binds this post with this user
-        likes: [],
-      });
+  async savePost(userData: { email: string; id: number }, postContent: string) {
+    // we need the user and its posts to bind the new post
+    const userPosts = await this.userRepoService.findUserWithPost(userData.id);
+    // creates a new post
+    const post = await this.postRepoService.createPost({
+      content: postContent,
+      owner: userPosts, // binds this post with this user
+      likes: [],
+    });
 
-      await this.postRepoService.savePost(post); // save the post
-      userPosts.posts.push(post); // bind this user with this post
-      await this.userRepoService.saveUser(userPosts);
-      const newPost = new PostDTO(post);
-
-      return {
-        status: 201,
-        ok: true,
-        data: { newPost },
-      };
-    } catch (error) {
-      return { ok: false, status: 500, msg: error.detail };
-    }
+    await this.postRepoService.savePost(post); // save the post
+    userPosts.posts.push(post); // bind this user with this post
+    await this.userRepoService.saveUser(userPosts);
+    return new PostDTO(post);
   }
 
   async updatePost(

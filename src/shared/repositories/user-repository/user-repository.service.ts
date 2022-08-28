@@ -12,9 +12,18 @@ export class UserRepositoryService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async saveUser(account: CreateAccount) {
+  async saveUser(user: any) {
+    try {
+      this.userRepository.save(user);
+    } catch (error) {
+      throw new HttpException(error.detail, HttpStatus.NOT_ACCEPTABLE);
+    }
+  }
+
+  async createAccount(account: CreateAccount) {
     try {
       await this.userRepository.save(account);
+      return { msg: 'Account crated successfully' };
     } catch (error) {
       if (error.detail.includes(' already exists')) {
         throw new HttpException(

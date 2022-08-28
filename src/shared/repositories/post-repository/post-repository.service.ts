@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from 'src/entities/post.entity';
 import { In, Repository } from 'typeorm';
@@ -32,11 +37,15 @@ export class PostRepositoryService {
     post.content = properties.content;
     post.owner = properties.owner;
     post.likes = [];
-    return this.savePost(post);
+    return post;
   }
 
   async savePost(post: PostEntity) {
-    return await this.postRepository.save(post);
+    try {
+      return await this.postRepository.save(post);
+    } catch (error) {
+      throw new HttpException(error.detail, HttpStatus.NOT_ACCEPTABLE);
+    }
   }
 
   async getPostsWithLikes(postIds: number[]) {
