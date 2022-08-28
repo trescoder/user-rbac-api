@@ -41,11 +41,7 @@ export class UserRepositoryService {
   }
 
   async findUserBy(constrain: any) {
-    try {
-      return this.userRepository.findOneBy(constrain);
-    } catch (error) {
-      throw new Error(error);
-    }
+    return this.userRepository.findOneBy(constrain);
   }
 
   async findUserWithPost(userId: number) {

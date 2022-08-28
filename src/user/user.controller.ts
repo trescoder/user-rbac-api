@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Post,
-  Put,
-  Req,
-  Res,
-} from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import { Public } from 'src/auth/jwt-strategy/public.decorator';
 import { AllowedRoles } from 'src/auth/roles.decorator';
 import { Roles } from 'src/roles';
@@ -55,10 +45,7 @@ export class UserController {
   }
 
   @Delete('delete-account')
-  async deleteAccount(@Body() body, @Res() res: Response) {
-    const { msg, data, status } = await this.userService.deleteAccount(
-      body.accountId,
-    );
-    return res.status(status).json({ msg, data });
+  async deleteAccount(@Body() body) {
+    return this.userService.deleteAccount(body.accountId);
   }
 }

@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ResponseInterface } from 'src/shared/interfaces/response';
 import { CreateAccount } from './create-account.interface';
 import { hashPassword } from 'src/bcrypt-manager';
 import { UserRepositoryService } from 'src/shared/repositories/user-repository/user-repository.service';
@@ -73,26 +72,15 @@ export class UserService {
     return { ok: true, status: 201, msg };
   }
 
-  async deleteAccount(id: number): Promise<ResponseInterface> {
-    try {
-      const account = await this.userRepoService.findUserBy({ id });
-
-      if (account) {
-        await this.userRepoService.deleteAccount(account.id);
-        return {
-          ok: true,
-          status: 200,
-          msg: `Account removed successfully`,
-        };
-      } else {
-        return {
-          ok: true,
-          status: 404,
-          msg: `user account with id '${id}' not found`,
-        };
-      }
-    } catch (error) {
-      return { ok: false, status: 500, data: error, msg: '' };
+  async deleteAccount(id: number) {
+    const account = await this.userRepoService.findUserBy({ id });
+    if (!account) {
+      throw new HttpException(
+        'Account with id ' + id + ' Not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
+    await this.userRepoService.deleteAccount(account.id);
+    return { msg: `Account removed successfully` };
   }
 }
