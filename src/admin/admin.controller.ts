@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { AllowedRoles } from 'src/auth/roles.decorator';
 import { Roles } from 'src/roles';
@@ -19,7 +11,7 @@ export class AdminController {
 
   @Get('get-user/:id')
   async getUsersData(@Param('id', ParseIntPipe) id, @Res() res: Response) {
-    const { status, data } = await this.adminService.getUserData(id);
-    return res.status(status).json(data);
+    const { data } = await this.adminService.getUserData(id);
+    return data;
   }
 }
