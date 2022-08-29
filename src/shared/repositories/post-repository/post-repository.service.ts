@@ -38,10 +38,12 @@ export class PostRepositoryService {
   }
 
   async getPostsWithLikes(postIds: number[]) {
-    return await this.postRepository.find({
-      relations: { likes: true },
-      where: { id: In(postIds) },
-    });
+    return this.postRepository
+      .createQueryBuilder('post')
+      .innerJoinAndSelect('post.likes', 'like')
+      .where('post.id IN(:...postIds)', { postIds })
+      .orderBy({ 'post.creation_date': 'DESC' })
+      .getMany();
   }
 
   async deletePost(id: number) {

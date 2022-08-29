@@ -4,12 +4,14 @@ import { UserEntity } from 'src/entities/user.entity';
 import { CreateAccount } from 'src/user/create-account.interface';
 import { ProfileDTO } from 'src/user/dto/profile.dto';
 import { Repository } from 'typeorm';
+import { PostRepositoryService } from '../post-repository/post-repository.service';
 
 @Injectable()
 export class UserRepositoryService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    private postRepoService: PostRepositoryService,
   ) {}
 
   async saveUser(user: any) {
@@ -44,25 +46,24 @@ export class UserRepositoryService {
     return this.userRepository.findOneBy(constrain);
   }
 
-  async findUserWithPost(userId: number) {
-    return this.userRepository.findOne({
-      relations: { posts: true },
-      where: { id: userId },
-    });
+  async getUserWithPost(userId: number, constrain: any) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.posts', 'post')
+      .where('user.id = :id', { id: userId })
+      .andWhere('post.ownerId = :userId', { userId })
+      .limit(constrain.limit ?? 15)
+      .skip(constrain.skip ?? 0)
+      .orderBy({ 'post.creation_date': 'DESC' })
+      .getOneOrFail();
   }
 
   async getUserProfile(userId: number) {
     // retrieve user, posts and likes
-    // TODO: Limit the number of posts
-    const userProfile = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.posts', 'post')
-      .leftJoinAndSelect('post.likes', 'likes')
-      .where('user.id = :userId', { userId: userId })
-      .getOne();
-    if (!userProfile) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    }
+    const userProfile = await this.getUserWithPost(userId, {});
+    const postIds = userProfile.posts.map((post) => post.id);
+    const posts = await this.postRepoService.getPostsWithLikes(postIds);
+    userProfile.posts = posts;
     return new ProfileDTO(userProfile);
   }
 

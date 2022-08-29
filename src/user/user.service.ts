@@ -26,7 +26,10 @@ export class UserService {
 
   async addPost(userData: { email: string; id: number }, postContent: string) {
     // we need the user and its posts to bind the new post
-    const userPosts = await this.userRepoService.findUserWithPost(userData.id);
+    const userPosts = await this.userRepoService.getUserWithPost(
+      userData.id,
+      {},
+    );
     // creates a new post
     const post = await this.postRepoService.createPost({
       content: postContent,
