@@ -1,13 +1,22 @@
 import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { ApiBody, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/LoginDto';
+import { TokenDto } from './dto/TokenDto';
 import { Public } from './jwt-strategy/public.decorator';
 import { LocalGuard } from './local-strategy/local.guard';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiBody({
+    type: LoginDto,
+    description: 'Login credentials.',
+  })
+  @ApiCreatedResponse({ description: 'login successful.', type: TokenDto })
   @Public()
   @UseGuards(LocalGuard)
   @Post('sing-in')
