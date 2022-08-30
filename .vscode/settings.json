@@ -1,0 +1,17 @@
+{
+  "files.exclude": {
+    "**/.git": true, // this is a default value
+    "**/.DS_Store": true, // this is a default value
+    "front/src/app/api": true,
+    "**/node_modules": true, // this excludes all folders
+    // named "node_modules" from
+    // the explore tree
+    "**/dist": true // This excludes compiled files
+  },
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "vsicons.presets.angular": true
+}
