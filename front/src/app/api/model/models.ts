@@ -3,6 +3,7 @@ export * from './createLikeDTO';
 export * from './createPostDTO';
 export * from './deleteAccountDto';
 export * from './deletePostDto';
+export * from './likeDTO';
 export * from './loginDto';
 export * from './postDTO';
 export * from './profileDTO';

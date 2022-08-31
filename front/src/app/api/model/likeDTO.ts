@@ -9,27 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PostDTO } from './postDTO';
 
-export interface ProfileDTO { 
+export interface LikeDTO { 
     /**
-     * Profile ID
+     * Amount of likes.
      */
-    id: number;
+    likes: any;
     /**
-     * Username
+     * Amount of dislikes
      */
-    username: string;
-    /**
-     * User Email
-     */
-    email: string;
-    /**
-     * User role
-     */
-    role: string;
-    /**
-     * User posts.
-     */
-    posts: Array<PostDTO>;
+    dislikes: any;
 }

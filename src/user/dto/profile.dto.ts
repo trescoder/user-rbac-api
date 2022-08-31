@@ -25,6 +25,7 @@ export class ProfileDTO {
 
   @ApiProperty({
     description: 'User posts.',
+    type: [PostDTO],
   })
   posts: PostDTO[] = [];
 

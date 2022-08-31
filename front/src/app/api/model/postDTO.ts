@@ -9,6 +9,23 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { LikeDTO } from './likeDTO';
 
 export interface PostDTO { 
+    /**
+     * Post content.
+     */
+    content: string;
+    /**
+     * Post ID
+     */
+    id: number;
+    /**
+     * Creation Date
+     */
+    creation_date: Date;
+    /**
+     * Post likes
+     */
+    likes: LikeDTO;
 }
