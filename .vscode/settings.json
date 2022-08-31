@@ -2,7 +2,7 @@
   "files.exclude": {
     "**/.git": true, // this is a default value
     "**/.DS_Store": true, // this is a default value
-    "front/src/app/api": true,
+    "front/src/app/api": false,
     "**/node_modules": true, // this excludes all folders
     // named "node_modules" from
     // the explore tree

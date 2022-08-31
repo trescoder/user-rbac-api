@@ -1,0 +1,11 @@
+<mat-list role="list">
+  <mat-list-item
+    [routerLink]="item.path"
+    [class.selected]="item.selected"
+    class="item"
+    *ngFor="let item of items"
+    role="listitem"
+  >
+    <mat-icon>{{ item.icon }}</mat-icon> {{ item.title }}
+  </mat-list-item>
+</mat-list>

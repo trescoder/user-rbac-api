@@ -14,8 +14,12 @@ async function bootstrap() {
       'RBAC NestJS API with openapi integration for API client generation.',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    operationIdFactory: (_controllerKey: string, methodKey: string) =>
+      methodKey,
+  });
   SwaggerModule.setup('api', app, document);
 
   await app.listen(3000);

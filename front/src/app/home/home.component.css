@@ -1,0 +1,44 @@
+.sidenav {
+  width: 250px;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+
+.mat-sidenav {
+  background-image: radial-gradient(
+    circle at top right,
+    rgb(105, 135, 213) 0%,
+    rgb(105, 135, 213) 14.286%,
+    rgb(94, 121, 206) 14.286%,
+    rgb(94, 121, 206) 28.572%,
+    rgb(82, 107, 199) 28.572%,
+    rgb(82, 107, 199) 42.858%,
+    rgb(71, 94, 193) 42.858%,
+    rgb(71, 94, 193) 57.144%,
+    rgb(59, 80, 186) 57.144%,
+    rgb(59, 80, 186) 71.43%,
+    rgb(48, 66, 179) 71.43%,
+    rgb(48, 66, 179) 85.716%,
+    rgb(36, 52, 172) 85.716%,
+    rgb(36, 52, 172) 100.002%
+  );
+  box-shadow: inset -10px 0px 8px 0px rgba(0, 0, 0, 0.24);
+}
+
+.main-content {
+  margin: 2rem;
+}
+
+.mat-sidenav-content {
+  background: #f2f2f2;
+}
+
+.logout-button {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  width: calc(100% - 1rem);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+}
