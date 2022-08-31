@@ -23,6 +23,12 @@ export class StartMenuComponent implements OnInit {
       path: '/',
       icon: 'home',
     },
+    {
+      name: 'POSTS',
+      title: 'Posts',
+      path: '/posts',
+      icon: 'article',
+    },
   ];
 
   constructor(private messagesService: MessageService) {}
