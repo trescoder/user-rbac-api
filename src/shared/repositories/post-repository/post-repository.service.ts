@@ -11,7 +11,10 @@ export class PostRepositoryService {
   ) {}
 
   findAndCount(opts: FindManyOptions<PostEntity>) {
-    return this.postRepository.findAndCount(opts);
+    return this.postRepository.findAndCount({
+      ...opts,
+      relations: { likes: true },
+    });
   }
 
   async getPost(id: number) {

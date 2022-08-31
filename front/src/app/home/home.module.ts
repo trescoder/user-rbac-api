@@ -22,6 +22,11 @@ import { StartMenuComponent } from './start-menu/start-menu.component';
             loadChildren: () =>
               import('src/app/start/start.module').then((m) => m.StartModule),
           },
+          {
+            path: 'posts',
+            loadChildren: () =>
+              import('src/app/posts/posts.module').then((m) => m.PostsModule),
+          },
         ],
       },
     ]),
