@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../api/api/auth.service';
 import { JwtService } from '../auth/jwt.service';
@@ -11,8 +11,8 @@ import { JwtService } from '../auth/jwt.service';
 })
 export class LoginComponent implements OnInit {
   form: FormGroup = this.formBuilder.group({
-    username: [''],
-    password: [''],
+    email: ['', Validators.required],
+    password: ['', Validators.required],
   });
 
   constructor(
