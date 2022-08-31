@@ -1,0 +1,107 @@
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  min-height: 100vh;
+  background: #e2e2e2;
+}
+.app-header {
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+}
+.login-wrapper {
+  height: 100%;
+}
+.positronx {
+  text-decoration: none;
+  color: #ffffff;
+}
+.box {
+  position: relative;
+  top: 250px;
+  opacity: 1;
+  float: left;
+  padding: 60px 50px 40px 50px;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  transform: scale(1);
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  z-index: 5;
+  max-width: 330px;
+}
+.box.back {
+  transform: scale(0.95);
+  -webkit-transform: scale(0.95);
+  -ms-transform: scale(0.95);
+  top: -20px;
+  opacity: 0.8;
+  z-index: -1;
+}
+.login-wrapper .example-form {
+  min-width: 100%;
+  max-width: 300px;
+  width: 100%;
+}
+.login-wrapper .example-full-width,
+.login-wrapper .btn-block {
+  width: 100%;
+}
+.login-wrapper mat-card-header {
+  text-align: center;
+  width: 100%;
+  display: block;
+  font-weight: 700;
+}
+.login-wrapper mat-card-header mat-card-title {
+  font-size: 30px;
+  margin: 0;
+}
+.login-wrapper .mat-card {
+  padding: 40px 70px 50px;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+.login-wrapper .mat-stroked-button {
+  border: 1px solid currentColor;
+  line-height: 54px;
+  background: #fff7fa;
+}
+.login-wrapper .mat-form-field-appearance-legacy .mat-form-field-infix {
+  padding: 0.8375em 0;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: radial-gradient(
+    circle at top left,
+    rgb(33, 29, 75) 0%,
+    rgb(33, 29, 75) 4%,
+    rgb(29, 39, 97) 4%,
+    rgb(29, 39, 97) 39%,
+    rgb(24, 49, 120) 39%,
+    rgb(24, 49, 120) 45%,
+    rgb(20, 59, 142) 45%,
+    rgb(20, 59, 142) 69%,
+    rgb(15, 69, 164) 69%,
+    rgb(15, 69, 164) 71%,
+    rgb(11, 79, 186) 71%,
+    rgb(11, 79, 186) 75%,
+    rgb(6, 89, 209) 75%,
+    rgb(6, 89, 209) 79%,
+    rgb(2, 99, 231) 79%,
+    rgb(2, 99, 231) 100%
+  );
+}

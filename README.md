@@ -1,73 +1,158 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# RBAC API openapi client generation
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## How to decorate controllers
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+1. Use @ApiTags to group all the controller methods inside the controller, if you don't they'll end up inside a big "DefaultService". If you tag your user controller with @ApiTags('User'), your API client will have a UserService with the same methods as your controller.
 
-## Description
+2. If any of your controller methods uses authentication, you **must** use the appropiate decorator, in this case it's @ApiBearerAuth() because this API uses JWT.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
+```typescript
+@ApiTags('User')
+@ApiBearerAuth()
+@Controller('user')
+@AllowedRoles(Roles.admin, Roles['semi-admin'], Roles.user)
+export class UserController {
+  /*...*/
+}
 ```
 
-## Running the app
+## How to decorate controller methods
 
-```bash
-# development
-$ npm run start
+1. You don't have to decorate the request body with @ApiBody(), if you decorated it with @Body() **and** you annotated the type:
 
-# watch mode
-$ npm run start:dev
+```typescript
+//...
+class UserController {
+  //...
 
-# production mode
-$ npm run start:prod
+  @Post('sign-up')
+  @Public()
+  async signIn(
+    @Body() body: CreateAccountDTO /* <- don't forget to annotate the body*/,
+  ) {
+    return this.userService.createAccount(body);
+  }
+
+  //...
+}
 ```
 
-## Test
+2. If didn't use @Body() to access the request body, use the following example:
 
-```bash
-# unit tests
-$ npm run test
+```typescript
+//...
+export class AuthController {
+  //...
 
-# e2e tests
-$ npm run test:e2e
+  @ApiBody({
+    type: LoginDto,
+    description: 'Login credentials.',
+  }) // <- Use @ApiBody to annotate the request body.
+  @ApiCreatedResponse({ description: 'login successful.', type: TokenDto })
+  @Public()
+  @UseGuards(LocalGuard)
+  @Post('sing-in')
+  async login(@Req() req, @Res() res: Response) {
+    // req.user is return from the local strategy, it contains the user's email and password
+    const token = await this.authService.login(req.user);
+    return res.status(200).json(token);
+  }
 
-# test coverage
-$ npm run test:cov
+  //...
+}
 ```
 
-## Support
+3. You have to annotate the response bodies for every controller, depending on the HTTP verb. For GET, PUT, PATCH AND DELETE requests (I don't usually return anything for PUT, PATCH and DELETE requests so I don't annotate their responses), use @ApiOkResponse, for @POST requests use @ApiCreatedResponse:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```typescript
+//...
+export class AuthController {
+  //...
 
-## Stay in touch
+  @ApiOkResponse({ type: PostDTO, description: 'A post.' })
+  @ApiParam({ name: 'id' })
+  @Get('get-post/:id')
+  async getPostById(@Param('id', ParseIntPipe) id: number) {
+    return new PostDTO(await this.postService.getPost(id));
+  }
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  @ApiCreatedResponse({ description: 'New post created.', type: PostDTO })
+  @Post('add-post')
+  async addPost(@Req() req, @Body() body: CreatePostDTO) {
+    return this.userService.addPost(req.user, body.content);
+  }
 
-## License
+  //...
+}
+```
 
-Nest is [MIT licensed](LICENSE).
+4. Every property of every class you use for request body or response has to be annotated with @ApiProperty. I recommend you add descriptions to them because your IDE/TextEditor intellisense will include said description when you hover your mouse over those properties. Do not forget to include the type property to the @ApiProperty decorator when the property you're annotating is another DTO.
+
+```typescript
+export class PostDTO {
+  @ApiProperty({
+    description: 'Post content.',
+  })
+  content: string;
+
+  @ApiProperty({ description: 'Post ID' })
+  id: number;
+
+  @ApiProperty({ description: 'Creation Date' })
+  creation_date: Date;
+
+  @ApiProperty({ description: 'Post likes', type: LikeDTO })
+  likes: LikeDTO;
+
+  constructor(post: PostEntity) {
+    this.id = post.id;
+    this.content = post.content;
+    this.creation_date = post.creation_date;
+    this.likes = new LikeDTO(post.likes);
+  }
+}
+```
+
+## How to generate the API client
+
+1. Start your API (npm run start:dev)
+2. Run `npm run api` from the "front" directory
+3. After that, inside front/src/app there will be a new "api" directory with your API client. This application already imported the generated ApiModule inside the main module and configured JWT authentication. You can now import your API services inside your components, since AuthController was tagged as 'Auth', you can inject the newly generated AuthService to log in:
+
+```typescript
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../api/api/auth.service';
+import { JwtService } from '../auth/jwt.service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
+})
+export class LoginComponent implements OnInit {
+  form: FormGroup = this.formBuilder.group({
+    email: ['', Validators.required],
+    password: ['', Validators.required],
+  });
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private jwtService: JwtService,
+    private router: Router,
+  ) {}
+
+  ngOnInit(): void {}
+
+  login() {
+    this.authService.login(this.form.value).subscribe({
+      next: (result) => {
+        this.jwtService.saveToken(result.access_token);
+        this.router.navigateByUrl('/');
+      },
+    });
+  }
+}
+```

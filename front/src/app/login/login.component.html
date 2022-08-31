@@ -1,0 +1,44 @@
+<div class="container">
+  <div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center">
+    <mat-card class="box">
+      <mat-card-header>
+        <mat-card-title>RBAC - Login</mat-card-title><br />
+      </mat-card-header>
+      <form [formGroup]="form" class="example-form">
+        <mat-card-content>
+          <mat-form-field class="example-full-width">
+            <input
+              formControlName="email"
+              type="text"
+              name="user"
+              matInput
+              placeholder="User"
+            />
+          </mat-form-field>
+          <mat-form-field class="example-full-width">
+            <input
+              formControlName="password"
+              type="password"
+              name="pass"
+              matInput
+              placeholder="Password"
+            />
+          </mat-form-field>
+        </mat-card-content>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="login()"
+          [disabled]="form.invalid"
+          class="btn-block"
+          style="margin-bottom: 1rem"
+        >
+          Log in
+        </button>
+        <button mat-button routerLink="/login/sign-up" class="btn-block">
+          Sign up
+        </button>
+      </form>
+    </mat-card>
+  </div>
+</div>

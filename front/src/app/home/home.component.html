@@ -1,0 +1,18 @@
+<mat-sidenav-container style="height: 100vh">
+  <mat-sidenav mode="side" class="sidenav" opened>
+    <ngx-skeleton-loader
+      *ngIf="loading"
+      count="9"
+      appearance="line"
+    ></ngx-skeleton-loader>
+    <app-start-menu *ngIf="!loading"> </app-start-menu>
+    <button (click)="logout()" class="logout-button" mat-stroked-button>
+      <mat-icon>logout</mat-icon> Log out
+    </button>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

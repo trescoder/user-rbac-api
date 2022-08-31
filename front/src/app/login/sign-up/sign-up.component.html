@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center">
+    <mat-card class="box">
+      <mat-card-header>
+        <mat-card-title>New account</mat-card-title><br />
+      </mat-card-header>
+      <form [formGroup]="form" class="example-form">
+        <mat-card-content>
+          <mat-form-field class="example-full-width">
+            <input
+              formControlName="username"
+              type="text"
+              name="user"
+              matInput
+              placeholder="User"
+            />
+          </mat-form-field>
+          <mat-form-field class="example-full-width">
+            <input
+              formControlName="email"
+              type="text"
+              name="email"
+              matInput
+              placeholder="Email"
+            />
+          </mat-form-field>
+          <mat-form-field class="example-full-width">
+            <input
+              formControlName="password"
+              type="password"
+              name="pass"
+              matInput
+              placeholder="Password"
+            />
+          </mat-form-field>
+        </mat-card-content>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="signUp()"
+          [disabled]="form.invalid"
+          class="btn-block"
+          style="margin-bottom: 1rem"
+        >
+          Sign up
+        </button>
+      </form>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+.form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.mat-checkbox {
+  padding-bottom: 1rem;
+}
