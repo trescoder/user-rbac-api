@@ -4,6 +4,7 @@ import { UserRepositoryService } from 'src/shared/repositories/user-repository/u
 import { PostDTO } from './dto/post.dto';
 import { LikeRepositoryService } from 'src/shared/repositories/like-repository/like-repository.service';
 import { PostRepositoryService } from 'src/shared/repositories/post-repository/post-repository.service';
+import { UserEntity } from 'src/entities/user.entity';
 @Injectable()
 export class UserService {
   constructor(
@@ -13,7 +14,12 @@ export class UserService {
   ) {}
 
   async createAccount(accountData: CreateAccount) {
-    await this.userRepoService.createAccount(accountData);
+    const account = new UserEntity();
+    account.email = accountData.email;
+    account.password = accountData.password;
+    account.role = accountData.role;
+    account.username = accountData.username;
+    await this.userRepoService.createAccount(account);
     return { msg: 'User Account Created' };
   }
 
