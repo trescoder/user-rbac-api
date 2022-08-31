@@ -11,4 +11,8 @@
  */
 
 export interface CreatePostDTO { 
+    /**
+     * Post content.
+     */
+    content: string;
 }
