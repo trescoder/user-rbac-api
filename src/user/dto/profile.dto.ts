@@ -1,11 +1,31 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from 'src/entities/user.entity';
 import { PostDTO } from './post.dto';
 
 export class ProfileDTO {
+  @ApiProperty({
+    description: 'Profile ID',
+  })
   id: number;
+
+  @ApiProperty({
+    description: 'Username',
+  })
   username: string;
+
+  @ApiProperty({
+    description: 'User Email',
+  })
   email: string;
+
+  @ApiProperty({
+    description: 'User role',
+  })
   role: string;
+
+  @ApiProperty({
+    description: 'User posts.',
+  })
   posts: PostDTO[] = [];
 
   constructor(user: UserEntity) {
