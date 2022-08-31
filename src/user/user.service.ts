@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAccount } from './create-account.interface';
-import { hashPassword } from 'src/bcrypt-manager';
 import { UserRepositoryService } from 'src/shared/repositories/user-repository/user-repository.service';
 import { PostDTO } from './dto/post.dto';
 import { LikeRepositoryService } from 'src/shared/repositories/like-repository/like-repository.service';
@@ -14,8 +13,6 @@ export class UserService {
   ) {}
 
   async createAccount(accountData: CreateAccount) {
-    // encrypt password before store
-    accountData.password = hashPassword(accountData.password);
     await this.userRepoService.createAccount(accountData);
     return { msg: 'User Account Created' };
   }

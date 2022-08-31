@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { hashPassword } from 'src/bcrypt-manager';
 import { UserEntity } from 'src/entities/user.entity';
 import { CreateAccount } from 'src/user/create-account.interface';
 import { ProfileDTO } from 'src/user/dto/profile.dto';
@@ -24,8 +25,10 @@ export class UserRepositoryService {
 
   async createAccount(account: CreateAccount) {
     try {
+      // encrypt password before store
+      account.password = hashPassword(account.password);
       await this.userRepository.save(account);
-      return { msg: 'Account crated successfully' };
+      return { msg: 'Account created successfully' };
     } catch (error) {
       if (error.detail.includes(' already exists')) {
         throw new HttpException(
