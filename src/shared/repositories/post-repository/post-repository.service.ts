@@ -18,7 +18,10 @@ export class PostRepositoryService {
   }
 
   async getPost(id: number) {
-    const post = await this.postRepository.findOneBy({ id });
+    const post = await this.postRepository.findOne({
+      where: { id },
+      relations: { likes: true },
+    });
     if (!post) throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     return post;
   }

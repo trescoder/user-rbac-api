@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   ParseIntPipe,
   Post,
   Put,
@@ -14,6 +15,7 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { Public } from 'src/auth/jwt-strategy/public.decorator';
@@ -24,6 +26,7 @@ import {
   SortDirection,
   WithPagination,
 } from 'src/shared/decorators/with-pagination';
+import { PostRepositoryService } from 'src/shared/repositories/post-repository/post-repository.service';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { CreateLikeDTO } from './dto/create-like.dto';
 import { CreatePostDTO } from './dto/create-post.dto';
@@ -40,7 +43,10 @@ import { UserService } from './user.service';
 @Controller('user')
 @AllowedRoles(Roles.admin, Roles['semi-admin'], Roles.user)
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private postService: PostRepositoryService,
+  ) {}
 
   @ApiOkResponse({ description: 'User profile', type: ProfileDTO })
   @Get('profile')
@@ -75,6 +81,13 @@ export class UserController {
         sortDirection,
       ),
     );
+  }
+
+  @ApiOkResponse({ type: PostDTO, description: 'A post.' })
+  @ApiParam({ name: 'id' })
+  @Get('get-post/:id')
+  async getPostById(@Param('id', ParseIntPipe) id: number) {
+    return new PostDTO(await this.postService.getPost(id));
   }
 
   @ApiCreatedResponse({ description: 'New post created.', type: PostDTO })

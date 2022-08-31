@@ -1,1 +1,23 @@
-<p>edit-post works!</p>
+<mat-progress-bar *ngIf="loading"></mat-progress-bar>
+<span class="heading-3">New post</span>
+<form class="form" [formGroup]="form">
+  <mat-form-field appearance="fill">
+    <mat-label>Content</mat-label>
+    <textarea
+      style="min-height: 800px"
+      matInput
+      formControlName="content"
+    ></textarea>
+  </mat-form-field>
+</form>
+<div class="actions">
+  <button
+    color="primary"
+    (click)="save()"
+    [disabled]="form.invalid"
+    mat-raised-button
+  >
+    Save
+  </button>
+  <button mat-button routerLink="/posts">Cancel</button>
+</div>
