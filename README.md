@@ -117,5 +117,42 @@ export class PostDTO {
 
 1. Start your API (npm run start:dev)
 2. Run `npm run api` from the "front" directory
+3. After that, inside front/src/app there will be a new "api" directory with your API client. This application already imported the generated ApiModule inside the main module and configured JWT authentication. You can now import your API services inside your components, since AuthController was tagged as 'Auth', you can inject the newly generated AuthService to log in:
 
-After that, inside front/src/app there will be a new "api" directory with your API client. This application already imported the generated ApiModule inside the main module and configured JWT authentication.
+```typescript
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../api/api/auth.service';
+import { JwtService } from '../auth/jwt.service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
+})
+export class LoginComponent implements OnInit {
+  form: FormGroup = this.formBuilder.group({
+    email: ['', Validators.required],
+    password: ['', Validators.required],
+  });
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private jwtService: JwtService,
+    private router: Router,
+  ) {}
+
+  ngOnInit(): void {}
+
+  login() {
+    this.authService.login(this.form.value).subscribe({
+      next: (result) => {
+        this.jwtService.saveToken(result.access_token);
+        this.router.navigateByUrl('/');
+      },
+    });
+  }
+}
+```
