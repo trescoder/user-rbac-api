@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -9,11 +19,17 @@ import {
 import { Public } from 'src/auth/jwt-strategy/public.decorator';
 import { AllowedRoles } from 'src/auth/roles.decorator';
 import { Roles } from 'src/roles';
+import {
+  PaginationOptions,
+  SortDirection,
+  WithPagination,
+} from 'src/shared/decorators/with-pagination';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { CreateLikeDTO } from './dto/create-like.dto';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
 import { DeletePostDto } from './dto/delete-post.dto';
+import { PostPageDto } from './dto/post-page.dto';
 import { PostDTO } from './dto/post.dto';
 import { ProfileDTO } from './dto/profile.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -37,6 +53,28 @@ export class UserController {
   @Public() // this will be use by the jwt guard to determine if it is a public route or not
   async signIn(@Body() body: CreateAccountDTO) {
     return this.userService.createAccount(body);
+  }
+
+  @WithPagination()
+  @ApiOkResponse({
+    description: 'Page of asset records.',
+    type: PostPageDto,
+  })
+  @Get()
+  async listPosts(
+    @Query('pageNumber', ParseIntPipe) pageNumber: number,
+    @Query('pageSize', ParseIntPipe) pageSize: number,
+    @Query('sortByColumn') sortByColumn: string,
+    @Query('sortDirection') sortDirection: SortDirection,
+  ) {
+    return await this.userService.findAndPaginatePosts(
+      new PaginationOptions(
+        pageNumber,
+        pageSize,
+        sortByColumn as never,
+        sortDirection,
+      ),
+    );
   }
 
   @ApiCreatedResponse({ description: 'New post created.', type: PostDTO })

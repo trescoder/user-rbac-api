@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from 'src/entities/post.entity';
-import { In, Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 
 @Injectable()
 export class PostRepositoryService {
@@ -9,6 +9,10 @@ export class PostRepositoryService {
     @InjectRepository(PostEntity)
     private postRepository: Repository<PostEntity>,
   ) {}
+
+  findAndCount(opts: FindManyOptions<PostEntity>) {
+    return this.postRepository.findAndCount(opts);
+  }
 
   async getPost(id: number) {
     const post = await this.postRepository.findOneBy({ id });

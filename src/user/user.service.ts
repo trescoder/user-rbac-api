@@ -5,6 +5,9 @@ import { UserRepositoryService } from 'src/shared/repositories/user-repository/u
 import { PostDTO } from './dto/post.dto';
 import { LikeRepositoryService } from 'src/shared/repositories/like-repository/like-repository.service';
 import { PostRepositoryService } from 'src/shared/repositories/post-repository/post-repository.service';
+import { Page, PaginationOptions } from 'src/shared/decorators/with-pagination';
+import { FindManyOptions } from 'typeorm';
+import { PostEntity } from 'src/entities/post.entity';
 @Injectable()
 export class UserService {
   constructor(
@@ -22,6 +25,30 @@ export class UserService {
 
   async getUserProfile(userId: number) {
     return await this.userRepoService.getUserProfile(userId);
+  }
+
+  async findAndPaginatePosts(
+    pagination: PaginationOptions<PostDTO>,
+  ): Promise<Page<PostDTO>> {
+    const findManyOptions: FindManyOptions<PostEntity> = {
+      take: pagination.pageSize,
+      skip: pagination.pageNumber * pagination.pageSize,
+    };
+
+    if (pagination.sortByColumn) {
+      findManyOptions.order = {};
+      findManyOptions.order[pagination.sortByColumn] =
+        pagination.sortDirection as never;
+    }
+
+    const [assets, count] = await this.postRepoService.findAndCount(
+      findManyOptions,
+    );
+
+    return {
+      items: assets.map((r) => new PostDTO(r)),
+      count,
+    };
   }
 
   async addPost(userData: { email: string; id: number }, postContent: string) {

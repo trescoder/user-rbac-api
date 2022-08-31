@@ -6,6 +6,7 @@ export * from './deletePostDto';
 export * from './likeDTO';
 export * from './loginDto';
 export * from './postDTO';
+export * from './postPageDto';
 export * from './profileDTO';
 export * from './tokenDto';
 export * from './updatePostDto';

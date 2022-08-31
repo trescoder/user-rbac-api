@@ -23,6 +23,7 @@ import { CreatePostDTO } from '../model/createPostDTO';
 import { DeleteAccountDto } from '../model/deleteAccountDto';
 import { DeletePostDto } from '../model/deletePostDto';
 import { PostDTO } from '../model/postDTO';
+import { PostPageDto } from '../model/postPageDto';
 import { ProfileDTO } from '../model/profileDTO';
 import { UpdatePostDto } from '../model/updatePostDto';
 
@@ -267,6 +268,78 @@ export class UserService {
         return this.httpClient.request<any>('delete',`${this.basePath}/user/delete-post`,
             {
                 body: body,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * 
+     * 
+     * @param pageNumber Current page number, 0 indexed.
+     * @param pageSize Items per page.
+     * @param sortByColumn Sort results by this column.
+     * @param sortDirection Sort direction ASC or DESC.
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public listPosts(pageNumber: number, pageSize: number, sortByColumn?: string, sortDirection?: string, observe?: 'body', reportProgress?: boolean): Observable<PostPageDto>;
+    public listPosts(pageNumber: number, pageSize: number, sortByColumn?: string, sortDirection?: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<PostPageDto>>;
+    public listPosts(pageNumber: number, pageSize: number, sortByColumn?: string, sortDirection?: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<PostPageDto>>;
+    public listPosts(pageNumber: number, pageSize: number, sortByColumn?: string, sortDirection?: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+        if (pageNumber === null || pageNumber === undefined) {
+            throw new Error('Required parameter pageNumber was null or undefined when calling listPosts.');
+        }
+
+        if (pageSize === null || pageSize === undefined) {
+            throw new Error('Required parameter pageSize was null or undefined when calling listPosts.');
+        }
+
+
+
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParameters = queryParameters.set('pageNumber', <any>pageNumber);
+        }
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParameters = queryParameters.set('pageSize', <any>pageSize);
+        }
+        if (sortByColumn !== undefined && sortByColumn !== null) {
+            queryParameters = queryParameters.set('sortByColumn', <any>sortByColumn);
+        }
+        if (sortDirection !== undefined && sortDirection !== null) {
+            queryParameters = queryParameters.set('sortDirection', <any>sortDirection);
+        }
+
+        let headers = this.defaultHeaders;
+
+        // authentication (bearer) required
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers = headers.set('Authorization', 'Bearer ' + accessToken);
+        }
+        // to determine the Accept header
+        let httpHeaderAccepts: string[] = [
+            'application/json'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+        ];
+
+        return this.httpClient.request<PostPageDto>('get',`${this.basePath}/user`,
+            {
+                params: queryParameters,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
