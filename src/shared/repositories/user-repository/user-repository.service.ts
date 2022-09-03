@@ -20,20 +20,10 @@ export class UserRepositoryService {
   }
 
   async createAccount(account: CreateAccount) {
-    try {
-      // encrypt password before store
-      account.password = hashPassword(account.password);
-      await this.userRepository.save(account);
-      return { msg: 'Account created successfully' };
-    } catch (error) {
-      if (error.detail.includes(' already exists')) {
-        throw new HttpException(
-          'Email or username already taken',
-          HttpStatus.CONFLICT,
-        );
-      }
-      throw new HttpException(error.details, HttpStatus.BAD_REQUEST);
-    }
+    // encrypt password before store
+    account.password = hashPassword(account.password);
+    await this.userRepository.save(account);
+    return { msg: 'Account created successfully' };
   }
 
   async checkUserIdExistence(userId: number) {
@@ -68,10 +58,6 @@ export class UserRepositoryService {
   }
 
   async deleteAccount(id: number) {
-    try {
-      await this.userRepository.delete(id);
-    } catch (error) {
-      throw new Error(error);
-    }
+    await this.userRepository.delete(id);
   }
 }
