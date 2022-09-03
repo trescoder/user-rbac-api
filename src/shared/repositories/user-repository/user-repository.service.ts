@@ -1,29 +1,30 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { hashPassword } from 'src/bcrypt-manager';
 import { UserEntity } from 'src/entities/user.entity';
 import { CreateAccount } from 'src/user/create-account.interface';
 import { ProfileDTO } from 'src/user/dto/profile.dto';
 import { Repository } from 'typeorm';
+import { PostRepositoryService } from '../post-repository/post-repository.service';
 
 @Injectable()
 export class UserRepositoryService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    private postRepoService: PostRepositoryService,
   ) {}
 
   async saveUser(user: any) {
-    try {
-      this.userRepository.save(user);
-    } catch (error) {
-      throw new HttpException(error.detail, HttpStatus.NOT_ACCEPTABLE);
-    }
+    this.userRepository.save(user);
   }
 
   async createAccount(account: CreateAccount) {
     try {
+      // encrypt password before store
+      account.password = hashPassword(account.password);
       await this.userRepository.save(account);
-      return { msg: 'Account crated successfully' };
+      return { msg: 'Account created successfully' };
     } catch (error) {
       if (error.detail.includes(' already exists')) {
         throw new HttpException(
@@ -44,25 +45,25 @@ export class UserRepositoryService {
     return this.userRepository.findOneBy(constrain);
   }
 
-  async findUserWithPost(userId: number) {
-    return this.userRepository.findOne({
-      relations: { posts: true },
-      where: { id: userId },
-    });
+  async getUserWithPost(userId: number, constrain: any) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.posts', 'post')
+      .where('user.id = :id', { id: userId })
+      .getOne();
   }
 
   async getUserProfile(userId: number) {
     // retrieve user, posts and likes
-    // TODO: Limit the number of posts
-    const userProfile = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.posts', 'post')
-      .leftJoinAndSelect('post.likes', 'likes')
-      .where('user.id = :userId', { userId: userId })
-      .getOne();
-    if (!userProfile) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    }
+    const userProfile = await this.getUserWithPost(userId, {});
+
+    const postIds = userProfile.posts.map((post) => post.id);
+
+    let posts = [];
+    if (postIds.length > 0)
+      posts = await this.postRepoService.getPostsWithLikes(postIds);
+
+    userProfile.posts = posts;
     return new ProfileDTO(userProfile);
   }
 

@@ -47,14 +47,8 @@ export class LikeRepositoryService {
   }
 
   async removeLike(id: number) {
-    try {
-      const like = await this.likeRepository.findOneBy({ id });
-      await this.likeRepository.delete(like);
-    } catch (error) {
-      console.log(error);
-
-      throw new Error(error);
-    }
+    const like = await this.likeRepository.findOneBy({ id });
+    await this.likeRepository.delete(like);
   }
 
   async createLikeEntity({ like, post, userId }) {

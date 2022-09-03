@@ -5,6 +5,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { Public } from 'src/auth/jwt-strategy/public.decorator';
 import { AllowedRoles } from 'src/auth/roles.decorator';
 import { Roles } from 'src/roles';
 import { ProfileDTO } from 'src/user/dto/profile.dto';
@@ -22,5 +23,11 @@ export class AdminController {
   @Get('get-user/:id')
   async getUsersData(@Param('id', ParseIntPipe) id: number) {
     return await this.adminService.getUserData(id);
+  }
+
+  @Public()
+  @Get('create-admin')
+  async createAdmin() {
+    return this.adminService.createAdminUser();
   }
 }

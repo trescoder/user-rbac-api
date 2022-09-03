@@ -1,3 +1,4 @@
+import { IsEmail, isEmail } from 'class-validator';
 import { Roles } from 'src/roles';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PostEntity } from './post.entity';
@@ -10,6 +11,7 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 100, unique: true })
   username: string;
 
+  @IsEmail()
   @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 

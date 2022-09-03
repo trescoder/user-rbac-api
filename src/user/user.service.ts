@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAccount } from './create-account.interface';
-import { hashPassword } from 'src/bcrypt-manager';
 import { UserRepositoryService } from 'src/shared/repositories/user-repository/user-repository.service';
 import { PostDTO } from './dto/post.dto';
 import { LikeRepositoryService } from 'src/shared/repositories/like-repository/like-repository.service';
@@ -8,6 +7,7 @@ import { PostRepositoryService } from 'src/shared/repositories/post-repository/p
 import { Page, PaginationOptions } from 'src/shared/decorators/with-pagination';
 import { FindManyOptions } from 'typeorm';
 import { PostEntity } from 'src/entities/post.entity';
+import { UserEntity } from 'src/entities/user.entity';
 @Injectable()
 export class UserService {
   constructor(
@@ -17,14 +17,17 @@ export class UserService {
   ) {}
 
   async createAccount(accountData: CreateAccount) {
-    // encrypt password before store
-    accountData.password = hashPassword(accountData.password);
-    await this.userRepoService.createAccount(accountData);
+    const account = new UserEntity();
+    account.email = accountData.email;
+    account.password = accountData.password;
+    account.role = accountData.role;
+    account.username = accountData.username;
+    await this.userRepoService.createAccount(account);
     return { msg: 'User Account Created' };
   }
 
   async getUserProfile(userId: number) {
-    return await this.userRepoService.getUserProfile(userId);
+    return this.userRepoService.getUserProfile(userId);
   }
 
   async findAndPaginatePosts(
@@ -53,17 +56,22 @@ export class UserService {
 
   async addPost(userData: { email: string; id: number }, postContent: string) {
     // we need the user and its posts to bind the new post
-    const userPosts = await this.userRepoService.findUserWithPost(userData.id);
+    const userPosts = await this.userRepoService.getUserWithPost(
+      userData.id,
+      {},
+    );
+
     // creates a new post
     const post = await this.postRepoService.createPost({
       content: postContent,
       owner: userPosts, // binds this post with this user
-      likes: [],
     });
 
     await this.postRepoService.savePost(post); // save the post
+
     userPosts.posts.push(post); // bind this user with this post
     await this.userRepoService.saveUser(userPosts);
+
     return new PostDTO(post);
   }
 

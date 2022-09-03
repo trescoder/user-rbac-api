@@ -19,6 +19,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       database: this.configService.get('DB_NAME'),
       entities: [UserEntity, PostEntity, LikeEntity],
       synchronize: true,
+      logging: process.env.NODE_ENV === 'development' ? true : false,
     };
   }
 }

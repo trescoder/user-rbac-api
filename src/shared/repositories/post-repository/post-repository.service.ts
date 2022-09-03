@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from 'src/entities/post.entity';
-import { FindManyOptions, In, Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class PostRepositoryService {
@@ -40,18 +40,16 @@ export class PostRepositoryService {
   }
 
   async savePost(post: PostEntity) {
-    try {
-      return this.postRepository.save(post);
-    } catch (error) {
-      throw new HttpException(error.detail, HttpStatus.NOT_ACCEPTABLE);
-    }
+    return this.postRepository.save(post);
   }
 
   async getPostsWithLikes(postIds: number[]) {
-    return await this.postRepository.find({
-      relations: { likes: true },
-      where: { id: In(postIds) },
-    });
+    return this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.likes', 'like')
+      .where('post.id IN (:...ids)', { ids: postIds })
+      .orderBy({ 'post.creation_date': 'DESC' })
+      .getMany();
   }
 
   async deletePost(id: number) {
